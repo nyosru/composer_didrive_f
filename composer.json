@@ -1,0 +1,27 @@
+{
+    "name": "nyos/f",
+    "description": "This is a simple nyos function for sites",
+    "version": "0.1.5",
+    
+    "keywords": [
+        "nyos", "uralweb.info"
+    ],
+    
+    "homepage": "https://uralweb.info/php/#classes",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Сергей Бакланов",
+            "email": "1@nyos.ru",
+            "homepage": "https://uralweb.info",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0"
+    }
+    ,
+    "autoload": {
+        "classmap": ["class/","f/"]    
+        }
+}
