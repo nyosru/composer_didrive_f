@@ -20,29 +20,29 @@ namespace f;
  * папка модуля в папке сайта
  * проверяем её первой
  */
-function like_tpl($tpl, $dir1, $dir2) {
+function like_tpl($tpl, $dir1, $dir2, $dir_base = null ) {
 
-    if (file_exists($dir2 . $tpl)) {
+    if (file_exists( $dir_base . $dir2 . $tpl)) {
         return $dir2 . $tpl;
     }
     //
-    elseif (file_exists($dir2 . $tpl . '.tpl')) {
+    elseif (file_exists( $dir_base .  $dir2 . $tpl . '.tpl')) {
         return $dir2 . $tpl . '.tpl';
     }
     //
-    elseif (file_exists($dir2 . $tpl . '.htm')) {
+    elseif (file_exists( $dir_base . $dir2 . $tpl . '.htm')) {
         return $dir2 . $tpl . '.htm';
     }
     //
-    elseif (file_exists($dir1 . $tpl)) {
+    elseif (file_exists( $dir_base . $dir1 . $tpl)) {
         return $dir1 . $tpl;
     }
     //
-    elseif (file_exists($dir1 . $tpl . '.tpl')) {
+    elseif (file_exists( $dir_base . $dir1 . $tpl . '.tpl')) {
         return $dir1 . $tpl . '.tpl';
     }
     //
-    elseif (file_exists($dir1 . $tpl . '.htm')) {
+    elseif (file_exists( $dir_base . $dir1 . $tpl . '.htm')) {
         return $dir1 . $tpl . '.htm';
     }
     //
