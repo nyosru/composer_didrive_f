@@ -1,7 +1,7 @@
 {
     "name": "nyos/f",
     "description": "This is a simple nyos function for sites",
-    "version": "1.0.0",
+    "version": "1.0.1",
     
     "keywords": [
         "nyos", "uralweb.info"
@@ -22,6 +22,16 @@
     }
     ,
     "autoload": {
-        "classmap": ["class/","f/"]    
+        "classmap": [ 
+            "class/Nyos.php",
+            "class/nyos_image.php",
+            "f/ajax.php",
+            "f/db.php",
+            "f/file.php",
+            "f/http.php",
+            "f/smarty.php",
+            "f/text.php",
+            "f/txt.php"
+            ]    
         }
 }

@@ -2,13 +2,13 @@
 
 namespace f;
 
-use Smarty as Smarty;
+//use Smarty as Smarty;
 
 // строчки безопасности
 
-if (!defined('IN_NYOS_PROJECT'))
-    die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
-            '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут.');
+//if (!defined('IN_NYOS_PROJECT'))
+//    die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
+//            '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут.');
 
 /**
  * проверяем есть ли шаблон во 2 папке, если нет то возвращаем путь из папки 1 
@@ -59,6 +59,7 @@ function like_tpl($tpl, $dir1, $dir2) {
  * папка с шаблонами (необязательно)
  * @return type
  */
+/*
 function compileSmarty($template, $vars, $tpl_dir = null) {
 
     if (!class_exists('Smarty')) {
@@ -81,3 +82,4 @@ function compileSmarty($template, $vars, $tpl_dir = null) {
 
     return $return;
 }
+*/
