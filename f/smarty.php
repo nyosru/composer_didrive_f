@@ -1,6 +1,6 @@
 <?php
 
-namespace f;
+namespace nyos\f;
 
 //use Smarty as Smarty;
 
