@@ -5,6 +5,65 @@ namespace f;
 if (!defined('IN_NYOS_PROJECT'))
     die('<h1>Сработала защита функций v1</h1><p>от злостных розовых хакеров.<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут.</p>');
 
+
+
+/**
+ * проверяем есть ли шаблон во 2 папке, если нет то возвращаем путь из папки 1 
+ * @param string $tpl
+ * @param string $dir1
+ * и после второй папки ищем в этой *tpl*|*tpl*.tpl|*tpl*.htm
+ * @param string $dir2
+ * сначала смотрим тут файлы *tpl*|*tpl*.tpl|*tpl*.htm
+ * @param type $root
+ * базовый путь для сравнений
+ * @return string 
+ * путь до шаблона без рута
+ */
+function like_tpl( string $tpl, string $dir1, string $dir2, $root = '' ) {
+
+    if (file_exists( $root.$dir2 . $tpl)) {
+        
+//        echo PHP_EOL;
+//        echo $dir2 . $tpl;
+        return $dir2 . $tpl;
+    }
+    //
+    elseif (file_exists($root.$dir2 . $tpl . '.tpl')) {
+//        echo PHP_EOL;
+//        echo $dir2 . $tpl . '.tpl';
+        return $dir2 . $tpl . '.tpl';
+    }
+    //
+    elseif (file_exists($root.$dir2 . $tpl . '.htm')) {
+//        echo PHP_EOL;
+//        echo $dir2 . $tpl . '.htm';
+        return $dir2 . $tpl . '.htm';
+    }
+    //
+    elseif (file_exists($root.$dir1 . $tpl)) {
+//        echo PHP_EOL;
+//        echo $dir1 . $tpl;
+        return $dir1 . $tpl;
+    }
+    //
+    elseif (file_exists($root.$dir1 . $tpl . '.tpl')) {
+//        echo PHP_EOL;
+//        echo $dir1 . $tpl . '.tpl';
+        return $dir1 . $tpl . '.tpl';
+    }
+    //
+    elseif (file_exists($root.$dir1 . $tpl . '.htm')) {
+//        echo PHP_EOL;
+//        echo $dir1 . $tpl . '.htm';
+        return $dir1 . $tpl . '.htm';
+    }
+    //
+    else {
+        return false;
+    }
+}
+
+
 function readDataFile(string $link_file_data, $type = null) {
 
     //echo '<br/>' . __FILE__ . ' #' . __LINE__;

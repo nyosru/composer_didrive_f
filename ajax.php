@@ -1,13 +1,6 @@
 <?php
 
-namespace nyos\f;
-
-class ajax {
-
-    public function __construct() {
-        echo '<br/>start ' . __CLASS__ . '<br/>';
-        echo __FILE__ . ' [' . __LINE__ . ']<br/>';
-    }
+namespace f;
 
     /**
      * заглушка возврат массива f\end2( array )
@@ -16,7 +9,7 @@ class ajax {
      * @param type $dop_array
      * @return type
      */
-    public static function end3($html, $stat = true, $dop_array = false) {
+    function end3($html, $stat = true, $dop_array = false) {
         return end2($html, $stat, array('data' => $dop_array), 'array');
     }
 
@@ -30,7 +23,7 @@ class ajax {
      * array - return / table - die / (default) json - die
      * @return type
      */
-    public static function end2( string $html, $stat = true, $dop_array = false, $type2 = 'json') {
+    function end2( string $html, $stat = true, $dop_array = false, $type2 = 'json') {
 
         $t = ( $dop_array !== false ) ? $dop_array : array();
 
@@ -65,5 +58,3 @@ class ajax {
             die(json_encode($t));
         }
     }
-
-}
