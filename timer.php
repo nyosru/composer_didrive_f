@@ -32,9 +32,9 @@ class timer {
             self:$last_res = microtime(true) - self::$start;
             
             if ($return == 'str') {
-                return number_format( self:$last_res, 3, '.', '`' );
+                return number_format( self::$last_res, 3, '.', '`' );
             }else{
-                return self:$last_res;
+                return self::$last_res;
             }
             
         }
