@@ -1,7 +1,7 @@
 {
     "name": "didrive/f",
-    "description": "This is a simple nyos function for sites",
-    "version": "1.1.1",
+    "description": "simple nyos function for sites",
+    "version": "1.1.2",
     
     "keywords": [
         "nyos", "uralweb.info"
@@ -27,6 +27,7 @@
             "db.php",
             "file.php",
             "http.php",
+            "timer.php",
             "txt.php"
             ]    
         }
