@@ -76,26 +76,18 @@ function getSql($db, $sql, $key = 'id') {
 function db2_insert($db, string $table, $var_array, $slash = false, $return = null, $skip_null = true) {
 
     $polya = \f\db\pole_list($db, $table);
-    // \f\pa($polya);
+    //\f\pa($polya);
+    //\f\pa($var_array);
     // var_dump($polya);
 
-    if (empty($polya)) {
-
-        $all_data = true;
-
-        //if ( $polya === false || sizeof($polya) == 0 ) {
-        // echo '<br/>'.__FILE__.' #'.__LINE__;
+    if (empty($polya))
         throw new \PDOException('no list polya in table ' . $table);
-    } else {
-        $all_data = false;
-    }
-    // echo '<br/>'.__FILE__.' #'.__LINE__;
 
     $all_val = $all_key = '';
 
     foreach ($var_array as $key => $v) {
 
-        if ($all_data = false && !isset($polya[$key]))
+        if ( empty($polya[$key]) )
             continue;
 
         if ($skip_null === true && ( strtolower($v) == 'null' || $v == '' ))
@@ -145,7 +137,7 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
         }
     } catch (\PDOException $ex) {
 
-        throw new \NyosEx('Ошибка при добавлении записи в бд ' . $ex->getMessage());
+        throw new \Exception('Ошибка при добавлении записи в бд ' . $ex->getMessage());
     }
 }
 
@@ -157,32 +149,29 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
  */
 function pole_list($db, string $table) {
 
-    try {
+    // try {
 
-        $s = $db->query('SELECT sql FROM `sqlite_master` WHERE `name` = \'' . addslashes($table) . '\' LIMIT 1 ');
-
-        if ($r = $s->fetch()) {
-            //echo $r['sql'].'<br/>';
-            preg_match_all('/\`(.+?)\`/', $r['sql'], $matches);
-            //echo '<pre>'; print_r($matches); echo '</pre>';
-
-            $re = [];
-
-            foreach ($matches[1] as $k => $v) {
-                if ($v == $table)
-                    continue;
-
-                $re[$v] = true;
-            }
-
-            return $re;
+        //var_dump( $db );
+        //echo $table;
+        
+        $s = $db->prepare('pragma table_info( \''.addslashes($table).'\' );');
+        $s->execute();
+        $r = $s->fetchAll();
+         
+        // \f\pa($r);
+        
+        $re = [];
+        
+        foreach( $r as $k => $v ) {
+            // \f\pa($r);
+            $re[$v['name']] = $v;
         }
-        else {
-            return false;
-        }
-    } catch (\PDOException $ex) {
-        return false;
-    }
+        //\f\pa($re);
+        return $re;
+        
+//    } catch (\PDOException $ex) {
+//        return false;
+//    }
 }
 
 function db2_insert_old1904007($db2, $table, $var_array, $slash = false, $return = null) {
@@ -297,7 +286,7 @@ function getSqlNumRows($db, $sql) {
 }
 
 /**
- * добавление многих записей в бд (PDO)
+ * добавление многих записей в бд ( PDO + исключения )
  * @param type $db
  * @param string $table
  * @param type $data
@@ -311,61 +300,99 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
         return false;
     }
 
-    //\f\pa($table,2,null,'table');
-    //\f\pa($key,2,null,'key');
-    //\f\pa($rows,2,null,'rows');
-
-    $list_polya = \f\db\pole_list($db, $table);
-    // \f\pa($list_polya, 2, null, '$list_polya');
-    // \f\pa($key , 2, null, '$key');
-    // \f\pa($rows, 2, null, '$rows');
 
     try {
 
-        $db->exec('BEGIN IMMEDIATE;');
+        //\f\pa($table,2,null,'table');
+        //\f\pa($key, 2, null, 'key');
+        //\f\pa($rows, 2, null, 'rows');
+
+        $list_polya = \f\db\pole_list($db, $table);
+        //\f\pa($list_polya, 2, null, '$list_polya');
+        //\f\pa($key, 2, null, '$key');
+        // \f\pa($rows, 2, null, '$rows');
 
         $indb = [];
         //$indb[':table'] = $table;
-        $str_v = $sql_key_str = '';
+        //$str_v = $sql_key_str = '';
+
 
         $nn = 1;
+
+        $val_str = '';
+        //$indb = [];
+
+        $str_v2 = '';
+
+        $db->exec('BEGIN IMMEDIATE;');
+
 
         foreach ($rows as $k => $v) {
 
 
-            foreach ($key as $k0 => $v0) {
-                $v[$k0] = $v0;
+
+            $polya_in = [];
+            foreach ($v as $k2 => $v2) {
+
+                if (isset($list_polya[$k2]) && !isset($polya_in[$k2]))
+                    $polya_in[$k2] = 1;
             }
 
+            foreach ($key as $k2 => $v2) {
+
+                if (isset($list_polya[$k2]))
+                    $polya_in[$k2] = 1;
+            }
+
+            $sql_key_str = '';
+
+            foreach ($polya_in as $k4 => $v4) {
+                $sql_key_str .= (!empty($sql_key_str) ? ',' : '' ) . ' `' . \addslashes($k4) . '` ';
+            }
+
+
+
+
+//            foreach ($key as $k0 => $v0) {
+//                $v[$k0] = $v0;
+//            }
             //\f\pa($v);
-            $indb = [];
             $str_v2 = '';
-            
-            foreach ($v as $k1 => $v1) {
+            $indb = [];
 
-                if ($nn == 1)
-                    $sql_key_str .= ( isset($sql_key_str{1}) ? ',' : '' ) . '`' . $k1 . '`';
-//            $str_v .= ( isset($str_v{1}) ? ',' : '' ) . ' :'.$k1.' ';
-//            $indb[':'.$k1] = $v1;
-                $str_v2 .= ( isset($str_v2{1}) ? ',' : '' ) . ' :'.$k1.'_'.$nn.' ';
-                $indb[':'.$k1.'_'.$nn] = $v1;
+            foreach ($polya_in as $k1 => $v1) {
+
+//                if( isset( $key[$k1] ) )
+//                $v1 = $key[$k1];
+
+                $var_mask = ':' . $k1 . '_' . $nn;
+
+                $str_v2 .= ( isset($str_v2{1}) ? ',' : '' ) . ' ' . $var_mask . ' ';
+                $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? null ;
             }
 
-        $s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
-        //echo $s;
-        // \f\pa($indb, 2);
-        $sql = $db->prepare($s);
-        $sql->execute($indb);
-            
-            // $str_v .= ( isset($str_v{2}) ? ',' : '' ) . ' ( ' . $str_v2 . ' ) ';
+            // $val_str .= (!empty($val_str) ? ',' : '' ) . '(' . $str_v2 . ')';
+
+            $s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
+            // echo '<hr>';
+            //echo $s;
+            //echo '<hr>';
+            // \f\pa($indb, 2);
+            $sql = $db->prepare($s);
+            $sql->execute($indb);
+
             $nn++;
         }
 
+        // \f\pa($indb);
+        //$s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
+        // $str_v .= ( isset($str_v{2}) ? ',' : '' ) . ' ( ' . $str_v2 . ' ) ';
+        // $nn++;
+
         $db->exec('COMMIT;');
         return true;
-        
+
         //die;
-        
     } catch (\PDOException $ex) {
 
         echo '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
