@@ -18,7 +18,8 @@ class timer {
      */
     public static function start($timer_id = '') {
         if (empty($timer_id)) {
-            return self::$start = microtime(true);
+            self::$start = microtime(true);
+            return self::$start;
         }
     }
 
@@ -29,10 +30,12 @@ class timer {
     public static function stop($return = 'str', $timer_id = '') {
         if (empty($timer_id)) {
 
-            self:$last_res = microtime(true) - self::$start;
+            self::$last_res = microtime(true) - self::$start;
             
             if ($return == 'str') {
-                return number_format( self::$last_res, 3, '.', '`' );
+                // return self::$last_res;
+                // return self::$start .' - '. microtime(true) .' - '. self::$last_res;
+                return number_format( self::$last_res, 5, '.', '`' );
             }else{
                 return self::$last_res;
             }
