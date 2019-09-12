@@ -326,10 +326,7 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
 
         $db->exec('BEGIN IMMEDIATE;');
 
-
         foreach ($rows as $k => $v) {
-
-
 
             $polya_in = [];
             foreach ($v as $k2 => $v2) {
@@ -349,9 +346,6 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
             foreach ($polya_in as $k4 => $v4) {
                 $sql_key_str .= (!empty($sql_key_str) ? ',' : '' ) . ' `' . \addslashes($k4) . '` ';
             }
-
-
-
 
 //            foreach ($key as $k0 => $v0) {
 //                $v[$k0] = $v0;
@@ -374,10 +368,10 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
             // $val_str .= (!empty($val_str) ? ',' : '' ) . '(' . $str_v2 . ')';
 
             $s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
-            // echo '<hr>';
-            //echo $s;
+             // echo '<hr>';
+            // echo $s;
             //echo '<hr>';
-            // \f\pa($indb, 2);
+             // \f\pa($indb, 2);
             $sql = $db->prepare($s);
             $sql->execute($indb);
 
@@ -781,7 +775,7 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
     foreach ($keys as $k => $v) {
         if (isset($polya[$k])) {
 
-            $where .= ( isset($where{3}) ? 'AND' : '' ) . ' `' . $k . '`= :key_' . $k . ' ';
+            $where .= ( !empty($where) ? 'AND' : '' ) . ' `' . $k . '`= :key_' . $k . ' ';
             $in_var[':key_' . $k] = $v;
 
             if ($replace_keys === false)
@@ -793,7 +787,6 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
     foreach ($data as $key => $val) {
 
         if (isset($key) && isset($polya[$key])) {
-
 
             // Пропускаем $key так как этот ключ участвует в выборке а замена запрещена
             if (isset($keys2[$key]))

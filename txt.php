@@ -8,6 +8,61 @@ if (!defined('IN_NYOS_PROJECT'))
     die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
             '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут.');
 
+
+
+
+//        $a = Array(
+//            Array("date" => "01.09.2016", "sum" => "450"),
+//            Array("date" => "31.08.2016", "sum" => "156"),
+//            Array("date" => "02.09.2016", "sum" => "888"));
+//
+//            usort($a, "\\f\\sort_ar_date");
+//            // var_dump($a);
+
+if (1 == 1) {
+
+    /**
+     * сортировать массив по полю head
+     * @param type $a
+     * @param type $b
+     * @return int
+     */
+    function sort_ar_head($a, $b) {
+
+        $key = 'head';
+        
+        if ($a[$key] == $b[$key]) {
+            return 0;
+        }
+        
+        return ( $a[$key] < $b[$key] ) ? -1 : 1;
+    }
+
+    function sort_ar_date($a, $b) {
+
+        if ($a["date"] == $b["date"]) {
+            return 0;
+        }
+        return (strtotime($a["date"]) < strtotime($b["date"])) ? -1 : 1;
+    }
+
+    /**
+     * 
+     * @param type $a
+     * @param type $b
+     * @return int
+     */
+    function sort_ar_date_desc($a, $b) {
+
+        if ($a["date"] == $b["date"]) {
+            return 0;
+        }
+        return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
+    }
+
+// usort($a, "\\f\\sort_ar_date_desc");
+}
+
 function strToHexByRtf($sString, $sEncoding = 'utf-8') {
 
     //echo $sString.' ';
@@ -94,7 +149,7 @@ function pa2($a) {
  * html / 2
  * @return type
  */
-function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda_vuzov = true) {
+function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda_vuzov = true, $show_obr = null) {
 
     if ($type == 'html' || $type2 == 'html') {
         ob_start('ob_gzhandler');
@@ -107,7 +162,9 @@ function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda
     }
 
     if (isset($name{1})) {
-        echo '<br/><b>' . $name . '</b>';
+        echo '<fieldset'
+        . ($type == 2 ? ' style="border: 1px solid green; padding: 20px; display:block; overflow: auto; max-height:300px;" ' : '' )
+        . '><legend>' . $name . '</legend>';
     }
 
     // $trace = debug_backtrace();    
@@ -118,13 +175,31 @@ function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda
         echo '<button class="btn btn-info" onclick="$(\'#asdqe' . $r . '\').toggle(\'slow\');" >показать</button>'
         . '<pre id="asdqe' . $r . '" style="display:none;max-height:500px;" >';
     } else if ($type == 2) {
-        echo '<pre style="border: 1px solid green; padding: 20px; display:block; overflow: auto; max-height:300px;" >';
+        //echo '<pre style="border: 1px solid green; padding: 20px; display:block; overflow: auto; max-height:300px;" >';
+        echo '<pre>';
     } else {
         echo '<pre>';
     }
 
-    print_r($g);
+    if ($show_obr == 'html-special') {
+        foreach ($g as $k => $v) {
+            echo PHP_EOL . PHP_EOL . 'k - ' . htmlspecialchars($k)
+            . PHP_EOL . 'v - [' . htmlspecialchars($v) . ']';
+
+            if (is_array($v) && sizeof($v) > 0) {
+                foreach ($v as $k1 => $v1) {
+                    echo PHP_EOL . PHP_EOL . 'k1 - ' . htmlspecialchars($k1)
+                    . PHP_EOL . 'v1 - [' . htmlspecialchars($v1) . ']';
+                }
+            }
+        }
+    } else {
+
+        print_r($g);
+    }
+
     echo '</pre>';
+    echo '</fieldset>';
 
     if ($type == 'html' || $type2 == 'html') {
         $r = ob_get_contents();
