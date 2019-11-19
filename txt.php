@@ -8,6 +8,49 @@ if (!defined('IN_NYOS_PROJECT'))
     die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
             '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут.');
 
+/**
+ * сортировать массив по полю head
+ * @param type $a
+ * @param type $b
+ * @return int
+ */
+function sort_ar_head($a, $b) {
+
+    $key = 'head';
+
+    if ($a[$key] == $b[$key]) {
+        return 0;
+    }
+
+    return ( $a[$key] < $b[$key] ) ? -1 : 1;
+}
+
+function sort_ar_date($a, $b) {
+
+    if ($a["date"] == $b["date"]) {
+        return 0;
+    }
+    return (strtotime($a["date"]) < strtotime($b["date"])) ? -1 : 1;
+}
+
+/**
+ * 
+ * @param type $a
+ * @param type $b
+ * @return int
+ */
+function sort_ar_date_desc($a, $b) {
+
+    if ($a["date"] == $b["date"]) {
+        return 0;
+    }
+    return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
+}
+
+// usort($a, "\\f\\sort_ar_date_desc");
+
+
+
 function strToHexByRtf($sString, $sEncoding = 'utf-8') {
 
     //echo $sString.' ';
@@ -96,7 +139,24 @@ function pa2($a) {
  */
 function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda_vuzov = true) {
 
-    if ($type == 'html' || $type2 == 'html') {
+//    if ( !empty($show_obr) && $show_obr == 'html-special') {
+//        foreach ($g as $k => $v) {
+//            echo PHP_EOL . PHP_EOL . 'k - ' . htmlspecialchars($k)
+//            . PHP_EOL . 'v - [' . htmlspecialchars($v) . ']';
+//
+//            if (is_array($v) && sizeof($v) > 0) {
+//                foreach ($v as $k1 => $v1) {
+//                    echo PHP_EOL . PHP_EOL . 'k1 - ' . htmlspecialchars($k1)
+//                    . PHP_EOL . 'v1 - [' . htmlspecialchars($v1) . ']';
+//                }
+//            }
+//        }
+//    } else {
+//
+//        print_r($g);
+//    }
+
+    if (!empty($type) && ( $type == 'html' || $type2 == 'html' )) {
         ob_start('ob_gzhandler');
     }
 

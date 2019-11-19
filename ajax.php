@@ -38,6 +38,7 @@ namespace f;
 
             return $t;
         }
+        //
         elseif ($type2 == 'table') {
 
             echo '<table>';
@@ -53,7 +54,9 @@ namespace f;
             echo '</table>';
 
             die();
-        } else {
+        } 
+        //
+        else {
 
             die(json_encode($t));
         }
