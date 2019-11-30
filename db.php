@@ -87,7 +87,7 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
 
     foreach ($var_array as $key => $v) {
 
-        if ( empty($polya[$key]) )
+        if (empty($polya[$key]))
             continue;
 
         if ($skip_null === true && ( strtolower($v) == 'null' || $v == '' ))
@@ -149,29 +149,65 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
  */
 function pole_list($db, string $table) {
 
-    // try {
+    // global $_pole_list;
 
-        //var_dump( $db );
-        //echo $table;
-        
-        $s = $db->prepare('pragma table_info( \''.addslashes($table).'\' );');
-        $s->execute();
-        $r = $s->fetchAll();
-         
-        // \f\pa($r);
-        
-        $re = [];
-        
-        foreach( $r as $k => $v ) {
+//$result = mysql_query("SHOW COLUMNS FROM `{$tbl}`");
+//  while($col = mysql_fetch_row($result)){
+//    print_r($col); print "<br>\n";
+//}    
+
+//    if( !empty($_pole_list[$table] ) ) {
+//
+//        //$_pole_list[$table]['111'] = '2222';
+//        \f\pa($_pole_list[$table]);
+//        return $_pole_list[$table];
+//        
+//    } else {
+
+        try {
+
+            //var_dump( $db );
+            //echo $table;
+
+            $s = $db->prepare('pragma table_info( \'' . addslashes($table) . '\' );');
+            $s->execute();
+            $r = $s->fetchAll();
+
             // \f\pa($r);
-            $re[$v['name']] = $v;
+
+            $_pole_list[$table] = [];
+
+            foreach ($r as $k => $v) {
+                // \f\pa($r);
+                $_pole_list[$table][$v['name']] = $v;
+            }
+
+            //\f\pa($re);
+            return $_pole_list[$table];
+        } catch (\PDOException $ex) {
+
+
+            try {
+                $s = $db->prepare('SHOW COLUMNS FROM `' . addslashes($table) . '` ;');
+                $s->execute();
+                // $r = $s->fetchAll();
+
+                $_pole_list[$table] = [];
+
+                while ($r = $s->fetch()) {
+                    // \f\pa($r);
+                    $_pole_list[$table][$r['Field']] = $r;
+                }
+
+                return $_pole_list[$table];
+            } catch (\PDOException $ex) {
+                // \f\pa($r);
+                // die();
+
+                return false;
+            }
         }
-        //\f\pa($re);
-        return $re;
-        
-//    } catch (\PDOException $ex) {
-//        return false;
-//    }
+    //}
 }
 
 function db2_insert_old1904007($db2, $table, $var_array, $slash = false, $return = null) {
@@ -326,10 +362,7 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
 
         $db->exec('BEGIN IMMEDIATE;');
 
-
         foreach ($rows as $k => $v) {
-
-
 
             $polya_in = [];
             foreach ($v as $k2 => $v2) {
@@ -350,9 +383,6 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
                 $sql_key_str .= (!empty($sql_key_str) ? ',' : '' ) . ' `' . \addslashes($k4) . '` ';
             }
 
-
-
-
 //            foreach ($key as $k0 => $v0) {
 //                $v[$k0] = $v0;
 //            }
@@ -368,14 +398,14 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
                 $var_mask = ':' . $k1 . '_' . $nn;
 
                 $str_v2 .= ( isset($str_v2{1}) ? ',' : '' ) . ' ' . $var_mask . ' ';
-                $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? null ;
+                $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? null;
             }
 
             // $val_str .= (!empty($val_str) ? ',' : '' ) . '(' . $str_v2 . ')';
 
             $s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
             // echo '<hr>';
-            //echo $s;
+            // echo $s;
             //echo '<hr>';
             // \f\pa($indb, 2);
             $sql = $db->prepare($s);
@@ -781,7 +811,7 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
     foreach ($keys as $k => $v) {
         if (isset($polya[$k])) {
 
-            $where .= ( isset($where{3}) ? 'AND' : '' ) . ' `' . $k . '`= :key_' . $k . ' ';
+            $where .= (!empty($where) ? 'AND' : '' ) . ' `' . $k . '`= :key_' . $k . ' ';
             $in_var[':key_' . $k] = $v;
 
             if ($replace_keys === false)
@@ -793,7 +823,6 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
     foreach ($data as $key => $val) {
 
         if (isset($key) && isset($polya[$key])) {
-
 
             // Пропускаем $key так как этот ключ участвует в выборке а замена запрещена
             if (isset($keys2[$key]))

@@ -27,10 +27,48 @@ function sort_ar_head($a, $b) {
 
 function sort_ar_date($a, $b) {
 
+    if (!isset($a["date"]) || !isset($b["date"]))
+        return 0;
+
     if ($a["date"] == $b["date"]) {
         return 0;
     }
     return (strtotime($a["date"]) < strtotime($b["date"])) ? -1 : 1;
+}
+
+function sort_ar_start($a, $b) {
+
+    $pole = 'start';
+
+    if (!isset($a[$pole]) || !isset($b[$pole]) || $a[$pole] == $b[$pole])
+        return 0;
+
+    return ( strtotime($a[$pole]) < strtotime($b[$pole]) ) ? -1 : 1;
+}
+
+function sort_ar_sort($a, $b) {
+
+    $pole = 'sort';
+
+    if (!isset($a[$pole]) || !isset($b[$pole]) || $a[$pole] == $b[$pole])
+        return 0;
+
+    return ( $a[$pole] < $b[$pole] ) ? -1 : 1;
+}
+
+/**
+ * сортируем массив по строчному полю fio
+ * @param type $a
+ * @param type $b
+ * @return int
+ */
+function sort_ar_str_fio($a, $b) {
+    $pole = 'fio';
+
+    if (!isset($a[$pole]) || !isset($b[$pole]) || $a[$pole] == $b[$pole])
+        return 0;
+
+    return ( $a[$pole] < $b[$pole] ) ? -1 : 1;
 }
 
 /**
