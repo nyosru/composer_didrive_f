@@ -26,6 +26,7 @@ $function = new Twig_SimpleFunction('didrive_f__timer_stop', function ( $timer_i
 $twig->addFunction($function);
 
 
+
 $function = new Twig_SimpleFunction('pa', function ( $ar, $type = null ) {
     
     if ($type == 2) {

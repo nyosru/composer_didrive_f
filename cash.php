@@ -11,6 +11,7 @@ class Cash {
     public static $run = false;
 
     public static function start() {
+
         if (self::$run !== true) {
             self::$cache = new \Memcache;
             self::$cache->connect('127.0.0.1', 11211) or die("Could not connect");
@@ -19,6 +20,7 @@ class Cash {
     }
 
     public static function close() {
+
         if (self::$run === true) {
             $cache->close();
             self::$run = false;
@@ -40,13 +42,33 @@ class Cash {
 
             if (isset($item)) {
                 $cache->delete($item);
-            } 
+            }
             //
             elseif (preg_match('/' . $regex . '/', $item)) {
                 $cache->delete($item);
             }
-            
         }
+    }
+
+    /**
+     * получаем переменную
+     * @param string $var
+     * @return type
+     */
+    public static function getVar(string $var) {
+        self::start();
+        $vars = self::$cache->get($var);
+        return (!empty($vars) ) ? $vars : false;
+    }
+
+    /**
+     * добавить значение
+     * @param string $var
+     * @param type $data
+     */
+    public static function setVar(string $var, $data, $time = 0 ) {
+        self::start();
+        return self::$cache->add($var, $data, false, $time );
     }
 
 }
