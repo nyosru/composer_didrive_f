@@ -22,7 +22,7 @@ class Cash {
     public static function close() {
 
         if (self::$run === true) {
-            $cache->close();
+            self::close();
             self::$run = false;
         }
     }

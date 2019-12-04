@@ -149,65 +149,67 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
  */
 function pole_list($db, string $table) {
 
-    // global $_pole_list;
+    global $db_cfg, $cash_db;
 
-//$result = mysql_query("SHOW COLUMNS FROM `{$tbl}`");
-//  while($col = mysql_fetch_row($result)){
-//    print_r($col); print "<br>\n";
-//}    
+    // \f\pa($db_cfg);
+    // echo '<br/>tt - ' . $table;
+//    if( $table == 'mitems' ){
+//        return [
+//            // 'id' => 
+//            'folder' => 1,
+//            'module' => 1,
+//            'head' => 1,
+//            'sort' => 1,
+//            'status' => 1,
+//            'add_d' => 1,
+//            'add_t' => 1,
+//        ];
+//    }
 
-//    if( !empty($_pole_list[$table] ) ) {
-//
-//        //$_pole_list[$table]['111'] = '2222';
-//        \f\pa($_pole_list[$table]);
-//        return $_pole_list[$table];
-//        
-//    } else {
+    // echo '<br/>tt '.__LINE__.' - ' . $table;
+    
+    if (!empty($cash_db['pole_list'][$table]))
+        return $cash_db['pole_list'][$table];
 
-        try {
+    // echo '<br/>tt '.__LINE__.' - ' . $table;
+    
+    if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
 
-            //var_dump( $db );
-            //echo $table;
+        // echo '<Br/>' . __LINE__;
 
-            $s = $db->prepare('pragma table_info( \'' . addslashes($table) . '\' );');
-            $s->execute();
-            $r = $s->fetchAll();
+        $s = $db->prepare('SHOW COLUMNS FROM `' . addslashes($table) . '` ;');
+        $s->execute();
+        // $r = $s->fetchAll();
 
+        $cash_db['pole_list'][$table] = [];
+
+        while ($r = $s->fetch()) {
             // \f\pa($r);
-
-            $_pole_list[$table] = [];
-
-            foreach ($r as $k => $v) {
-                // \f\pa($r);
-                $_pole_list[$table][$v['name']] = $v;
-            }
-
-            //\f\pa($re);
-            return $_pole_list[$table];
-        } catch (\PDOException $ex) {
-
-
-            try {
-                $s = $db->prepare('SHOW COLUMNS FROM `' . addslashes($table) . '` ;');
-                $s->execute();
-                // $r = $s->fetchAll();
-
-                $_pole_list[$table] = [];
-
-                while ($r = $s->fetch()) {
-                    // \f\pa($r);
-                    $_pole_list[$table][$r['Field']] = $r;
-                }
-
-                return $_pole_list[$table];
-            } catch (\PDOException $ex) {
-                // \f\pa($r);
-                // die();
-
-                return false;
-            }
+            $cash_db['pole_list'][$table][$r['Field']] = $r;
         }
-    //}
+
+        // \f\pa($_pole_list[$table]);
+        return $cash_db['pole_list'][$table];
+    } else {
+
+        $s = $db->prepare('pragma table_info( \'' . addslashes($table) . '\' );');
+        $s->execute();
+        $r = $s->fetchAll();
+
+        // \f\pa($r);
+
+        $cash_db['pole_list'][$table] = [];
+
+        foreach ($r as $k => $v) {
+            // \f\pa($r);
+            $cash_db['pole_list'][$table][$v['name']] = $v;
+        }
+
+        //\f\pa($re);
+        return $cash_db['pole_list'][$table];
+    }
+
+    throw new \Exception('Не достали поля');
 }
 
 function db2_insert_old1904007($db2, $table, $var_array, $slash = false, $return = null) {
@@ -332,10 +334,14 @@ function getSqlNumRows($db, $sql) {
  */
 function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash = true, $items_in_query = 500) {
 
+    global $db_cfg;
+
     if (empty($rows)) {
         return false;
     }
 
+//    if( $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info' && !empty($db_cfg) )
+//    \f\pa($db_cfg);
 
     try {
 
@@ -360,7 +366,12 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
 
         $str_v2 = '';
 
-        $db->exec('BEGIN IMMEDIATE;');
+
+        if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
+            
+        } else {
+            $db->exec('BEGIN IMMEDIATE;');
+        }
 
         foreach ($rows as $k => $v) {
 
@@ -419,7 +430,11 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
         // $str_v .= ( isset($str_v{2}) ? ',' : '' ) . ' ( ' . $str_v2 . ' ) ';
         // $nn++;
 
-        $db->exec('COMMIT;');
+        if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
+            
+        } else {
+            $db->exec('COMMIT;');
+        }
         return true;
 
         //die;
