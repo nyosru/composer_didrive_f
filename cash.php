@@ -31,11 +31,58 @@ class Cash {
      * удаляем все ключи
      * @param string $filtr
      */
-    public static function deleteKeyPoFilter(string $filtr) {
+    public static function deleteKeyPoFilter(array $filtr) {
 
         self::start();
 
-        $keys = $cache->getAllKeys();
+        $keys = self::$cache->get('keys');
+//        $keys[$var] = 1;
+
+        foreach ($keys as $k => $v) {
+
+            $delete_key = null;
+
+            foreach ($filtr as $k1 => $v1) {
+                if( strpos( $k , $v1 ) !== false ) {
+                    if( $delete_key === true || empty($delete_key) )
+                    $delete_key = true;
+                }else{
+                    $delete_key = false;
+                }
+            }
+
+            if ( $delete_key === true ) {
+                $delete_keys[] = $k;
+                self::$cache->delete($k);
+                unset($keys[$k]);
+            }
+            
+        }
+
+        //\f\pa($delete_keys,'','','$delete_keys');
+
+        if (!self::$cache->add('keys', $keys, false, 0)) {
+            self::$cache->set('keys', $keys, false, 0);
+        }
+
+//        return self::$cache->add($var, $data, false, $time);
+        return;
+
+
+
+
+
+
+
+
+
+
+        $keys = self::$cache->memcache_get();
+        // $keys = self::$cache->getAllKeys();
+
+        // \f\pa($keys);
+
+        return;
 
         $regex = $filtr . '.*';
         foreach ($keys as $item) {
@@ -62,13 +109,43 @@ class Cash {
     }
 
     /**
+     * трём все ключи
+     */
+    public static function allClear() {
+        self::start();
+        self::$cache->flush();
+    }
+
+    /**
      * добавить значение
      * @param string $var
      * @param type $data
      */
-    public static function setVar(string $var, $data, $time = 0 ) {
+    public static function setVar(string $var, $data, $time = 0) {
+
         self::start();
-        return self::$cache->add($var, $data, false, $time );
+
+        $keys = self::$cache->get('keys');
+
+        $keys[$var] = 1;
+
+        if (!self::$cache->add('keys', $keys, false, 0)) {
+            self::$cache->set('keys', $keys, false, 0);
+        }
+
+        return self::$cache->add($var, $data, false, $time);
     }
 
+}
+
+/**
+ * чистим кеш до нуля
+ */
+// /index.php?memcache_clear=yes
+if (!empty($_GET['memcache_clear']) && $_GET['memcache_clear'] == 'yes') {
+
+    \f\Cash::allClear();
+    // \f\Cash::close();
+    \f\redirect();
+    exit;
 }

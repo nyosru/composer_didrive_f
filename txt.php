@@ -87,6 +87,24 @@ function sort_ar_date_desc($a, $b) {
     return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
 }
 
+function sort_ar_date_int($a, $b) {
+
+    if ( $a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"] ) ){
+        return 0;
+    }
+    
+    return $a["date"] < $b["date"] ? 1 : -1;
+}
+
+function sort_ar_date_int_desc($a, $b) {
+
+    if ( $a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"] ) ){
+        return 0;
+    }
+    
+    return $a["date"] > $b["date"] ? 1 : -1;
+}
+
 // usort($a, "\\f\\sort_ar_date_desc");
 
 

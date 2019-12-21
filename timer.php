@@ -145,7 +145,8 @@ class CalcMemory {
             $sm2 = memory_get_usage();
             // echo '<br/>xxx' . __LINE__ . ' - ' . round($startMemory / 1024 / 1024, 2);
 
-            return self::$last_res_ar[$timer_id] = round(($sm2 - self::$start[$timer_id]) / 1024, 3);
+            // return self::$last_res_ar[$timer_id] = round(($sm2 - self::$start[$timer_id]) / 1024, 3);
+            self::$last_res_ar[$timer_id] = round(($sm2 - self::$start[$timer_id]) / 1024, 3);
 
             if ($return == 'str') {
 

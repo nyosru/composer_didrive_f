@@ -15,6 +15,11 @@ $function = new Twig_SimpleFunction('f__translit', function ( string $cyr_str, $
 });
 $twig->addFunction($function);
 
+$function = new Twig_SimpleFunction('f__get_ext', function ( string $f ) {
+    return \f\get_file_ext($f);
+});
+$twig->addFunction($function);
+
 
 
 
@@ -63,3 +68,8 @@ $function = new Twig_SimpleFunction('pa', function ( $ar, $type = null ) {
 $twig->addFunction($function);
 
 
+
+$function = new Twig_SimpleFunction('f__http_build_query', function ( array $ar ) {
+    return http_build_query($ar);
+});
+$twig->addFunction($function);
