@@ -189,10 +189,15 @@ function pa2($a) {
 
 /**
  * PrintArray вывод массива
- * @global type $status
  * @param type $g
+ * массив
  * @param type $type
- * html / 2
+ * / html2 - возвращаем Html распечатки
+ * / null - печатаем прямо на вызове как есть
+ * / 2 - печатаем прямо на вызове как есть и ограничиваем блок по высоте
+ * @param type $type2
+ * @param type $name
+ * @param type $show_file_lie_otkuda_vuzov
  * @return type
  */
 function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda_vuzov = true) {
@@ -214,7 +219,7 @@ function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda
 //        print_r($g);
 //    }
 
-    if (!empty($type) && ( $type == 'html' || $type2 == 'html' )) {
+    if (!empty($type) && ( $type == 'html' || $type == 'html2' || $type2 == 'html' )) {
         ob_start('ob_gzhandler');
     }
 
@@ -235,21 +240,25 @@ function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda
         $r = rand(1, 9999);
         echo '<button class="btn btn-info" onclick="$(\'#asdqe' . $r . '\').toggle(\'slow\');" >показать</button>'
         . '<pre id="asdqe' . $r . '" style="display:none;max-height:500px;" >';
-    } else if ($type == 2) {
+    } 
+    //
+    else if ($type == 2) {
         echo '<pre style="border: 1px solid green; padding: 20px; display:block; overflow: auto; max-height:300px;" >';
-    } else {
+    } 
+    //
+    else {
         echo '<pre>';
     }
 
     print_r($g);
     echo '</pre>';
 
-    if ($type == 'html' || $type2 == 'html') {
+    if ($type == 'html' || $type == 'html2' || $type2 == 'html') {
         $r = ob_get_contents();
         ob_end_clean();
     }
 
-    if ($type == 'html_array') {
+    if ( $type == 'html' || $type == 'html_array' ) {
         return $r;
     }
 }

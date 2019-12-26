@@ -11,7 +11,6 @@ class Cash {
     public static $run = false;
 
     public static function start() {
-
         if (self::$run !== true) {
             self::$cache = new \Memcache;
             self::$cache->connect('127.0.0.1', 11211) or die("Could not connect");
