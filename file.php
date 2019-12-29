@@ -1242,8 +1242,11 @@ function copyDirectory($from_path, $to_path) {
  * @return string
  */
 function get_file_ext($f) {
-    $info = pathinfo($f);
-    return strtolower($info['extension']);
+    
+    return pathinfo($f, PATHINFO_EXTENSION);
+    
+//    $info = pathinfo($f);
+//    return strtolower($info['extension']);
 }
 
 // function newfile( '/roor/dir/', '123.gif' )

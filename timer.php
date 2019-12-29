@@ -5,6 +5,26 @@ namespace f;
 if (!defined('IN_NYOS_PROJECT'))
     die('<h1>Сработала защита функций v1</h1><p>от злостных розовых хакеров.<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут.</p>');
 
+function timer_start($id = 0) {
+    \f\CalcMemory::start($id);
+    \f\timer::start($id);
+}
+
+function timer_stop($id = 0, $out = 'str') {
+    
+    $er = \f\timer::stop('str', 1);
+    $er2 = \f\CalcMemory::stop(1);
+
+// проработать этот вывод данных
+//    if ($out == 'ar') {
+//        return ['sec' => $er, 'memory' => $er2];
+//    }
+    //if ($out == 'str') {
+//    else {
+        return $er . ' сек, ' . $er2 . ' kb';
+//    }
+}
+
 class timer {
 
     public static $start = false;
@@ -62,7 +82,7 @@ class timer {
                     // return self::$last_res;
                     // return self::$start .' - '. microtime(true) .' - '. self::$last_res;
                     // echo '<br/>+ '.number_format(self::$last_res_ar[$timer_id], 5, '.', '`');
-                    return number_format(self::$last_res_ar[$timer_id], 5, '.', '`');
+                    return number_format(self::$last_res_ar[$timer_id], 2, '.', '`');
                 } else {
                     // echo '<br/>+ '.self::$last_res_ar[$timer_id];
                     return self::$last_res_ar[$timer_id];
@@ -144,7 +164,6 @@ class CalcMemory {
             $sm2 = 0;
             $sm2 = memory_get_usage();
             // echo '<br/>xxx' . __LINE__ . ' - ' . round($startMemory / 1024 / 1024, 2);
-
             // return self::$last_res_ar[$timer_id] = round(($sm2 - self::$start[$timer_id]) / 1024, 3);
             self::$last_res_ar[$timer_id] = round(($sm2 - self::$start[$timer_id]) / 1024, 3);
 
@@ -153,7 +172,7 @@ class CalcMemory {
                 // return self::$last_res;
                 // return self::$start .' - '. microtime(true) .' - '. self::$last_res;
                 // echo '<br/>+ '.number_format(self::$last_res_ar[$timer_id], 5, '.', '`');
-                return number_format(self::$last_res_ar[$timer_id], 5, '.', '`');
+                return number_format(self::$last_res_ar[$timer_id], 2, '.', '`');
             } else {
                 // echo '<br/>+ '.self::$last_res_ar[$timer_id];
                 return self::$last_res_ar[$timer_id];
