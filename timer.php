@@ -12,8 +12,8 @@ function timer_start($id = 0) {
 
 function timer_stop($id = 0, $out = 'str') {
     
-    $er = \f\timer::stop('str', 1);
-    $er2 = \f\CalcMemory::stop(1);
+    $er = \f\timer::stop('str', $id);
+    $er2 = \f\CalcMemory::stop($id);
 
 // проработать этот вывод данных
 //    if ($out == 'ar') {
