@@ -12,17 +12,19 @@ function timer_start($id = 0) {
 
 function timer_stop($id = 0, $out = 'str') {
     
-    $er = \f\timer::stop('str', $id);
-    $er2 = \f\CalcMemory::stop($id);
+    $timer = \f\timer::stop( $out, $id);
+    $memory = \f\CalcMemory::stop($id, $out);
 
 // проработать этот вывод данных
-//    if ($out == 'ar') {
-//        return ['sec' => $er, 'memory' => $er2];
-//    }
+    if ($out == 'ar') {
+        
+        return ['sec' => $timer, 'memory' => $memory ];
+    }
     //if ($out == 'str') {
-//    else {
-        return $er . ' сек, ' . $er2 . ' kb';
-//    }
+    else {
+        
+        return $timer . ' сек, ' . $memory . ' kb';
+    }
 }
 
 class timer {

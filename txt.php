@@ -46,7 +46,6 @@ function sort_ar_start($a, $b) {
     return ( strtotime($a[$pole]) < strtotime($b[$pole]) ) ? -1 : 1;
 }
 
-
 function sort_ar_sort($a, $b) {
 
     $pole = 'sort';
@@ -56,7 +55,6 @@ function sort_ar_sort($a, $b) {
 
     return ( $a[$pole] < $b[$pole] ) ? -1 : 1;
 }
-
 
 /**
  * сортируем массив по строчному полю fio
@@ -81,27 +79,47 @@ function sort_ar_str_fio($a, $b) {
  */
 function sort_ar_date_desc($a, $b) {
 
-    if ($a["date"] == $b["date"]) {
+    if ($a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"])) {
         return 0;
     }
     return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
 }
 
-function sort_ar_date_int($a, $b) {
+function sort_ar__iiko_checks_last_loaded__desc($a, $b) {
 
-    if ( $a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"] ) ){
+    $k = 'iiko_checks_last_loaded';
+
+    if (empty($a[$k]))
+        $a[$k] = 0;
+
+    if (empty($b[$k]))
+        $b[$k] = 0;
+
+    if ($a[$k] != $b[$k]) {
+        return ( $a[$k] > $b[$k] ) ? 1 : -1;
+    } else {
+        //if ( $a[$k] == $b[$k] || !isset($a[$k]) || !isset($b[$k] ) ){
         return 0;
     }
-    
+
+    //return (strtotime($a[$k]) < strtotime($b[$k])) ? 1 : -1;
+}
+
+function sort_ar_date_int($a, $b) {
+
+    if ($a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"])) {
+        return 0;
+    }
+
     return $a["date"] < $b["date"] ? 1 : -1;
 }
 
 function sort_ar_date_int_desc($a, $b) {
 
-    if ( $a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"] ) ){
+    if ($a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"])) {
         return 0;
     }
-    
+
     return $a["date"] > $b["date"] ? 1 : -1;
 }
 
@@ -240,11 +258,11 @@ function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda
         $r = rand(1, 9999);
         echo '<button class="btn btn-info" onclick="$(\'#asdqe' . $r . '\').toggle(\'slow\');" >показать</button>'
         . '<pre id="asdqe' . $r . '" style="display:none;max-height:500px;" >';
-    } 
+    }
     //
     else if ($type == 2) {
         echo '<pre style="border: 1px solid green; padding: 20px; display:block; overflow: auto; max-height:300px;" >';
-    } 
+    }
     //
     else {
         echo '<pre>';
@@ -258,7 +276,7 @@ function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda
         ob_end_clean();
     }
 
-    if ( $type == 'html' || $type == 'html_array' ) {
+    if ($type == 'html' || $type == 'html_array') {
         return $r;
     }
 }
