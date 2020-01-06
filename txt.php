@@ -56,6 +56,16 @@ function sort_ar_sort($a, $b) {
     return ( $a[$pole] < $b[$pole] ) ? -1 : 1;
 }
 
+function sort_ar_sort_desc($a, $b) {
+
+    $pole = 'sort';
+
+    if (!isset($a[$pole]) || !isset($b[$pole]) || $a[$pole] == $b[$pole])
+        return 0;
+
+    return ( $a[$pole] > $b[$pole] ) ? -1 : 1;
+}
+
 /**
  * сортируем массив по строчному полю fio
  * @param type $a
