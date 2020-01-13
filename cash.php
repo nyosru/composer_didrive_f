@@ -9,12 +9,18 @@ class Cash {
 
     public static $cache = false;
     public static $run = false;
+    public static $version = null;
 
     public static function start() {
+
         if (self::$run !== true) {
             self::$cache = new \Memcache;
             self::$cache->connect('127.0.0.1', 11211) or die("Could not connect");
             self::$run = true;
+            self::$version = self::$cache->getVersion();
+//            \f\pa(self::$version);
+//            1.5.15 - локалка
+//            1.5.20 - сервер
         }
     }
 
@@ -37,25 +43,29 @@ class Cash {
         $keys = self::$cache->get('keys');
 //        $keys[$var] = 1;
 
-        foreach ($keys as $k => $v) {
+        // \f\pa($keys);
 
-            $delete_key = null;
+        if (!empty($keys))
+            foreach ($keys as $k => $v) {
 
-            foreach ($filtr as $k1 => $v1) {
-                if (strpos($k, $v1) !== false) {
-                    if ($delete_key === true || empty($delete_key))
-                        $delete_key = true;
-                } else {
-                    $delete_key = false;
+                $delete_key = null;
+
+                foreach ($filtr as $v1) {
+                    if (strpos($k, $v1) !== false) {
+                        // if ($delete_key === true || empty($delete_key))
+                        if ( empty($delete_key) )
+                            $delete_key = true;
+                    } else {
+                        $delete_key = false;
+                    }
+                }
+
+                if ($delete_key === true) {
+                    $delete_keys[] = $k;
+                    self::$cache->delete($k);
+                    unset($keys[$k]);
                 }
             }
-
-            if ($delete_key === true) {
-                $delete_keys[] = $k;
-                self::$cache->delete($k);
-                unset($keys[$k]);
-            }
-        }
 
         //\f\pa($delete_keys,'','','$delete_keys');
 
@@ -115,17 +125,14 @@ class Cash {
         $keys = self::$cache->get('keys');
         $keys[$var] = 1;
 
-        if (!self::$cache->add('keys', $keys, false, $time )) {
-            self::$cache->set('keys', $keys, false, $time );
+        // echo '<br/>v ' . self::$version;
+        
+        if (!self::$cache->set('keys', $keys, false, 0)) {
+            self::$cache->add('keys', $keys, false, 0);
         }
 
-        $re = self::$cache->set($var, $data, false, $time );
-        //$re = self::$cache->add($var, $data, false, $time );
-        // var_dump($re);
-        
-        if (!$re) {
-            // self::$cache->set($var, $data, false, $time );
-            self::$cache->add($var, $data, false, $time );
+        if ( !self::$cache->set($var, $data, false, $time) ) {
+            self::$cache->add($var, $data, false, $time);
         }
         
     }

@@ -16,10 +16,6 @@ define('IN_NYOS_PROJECT', true);
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 
-
-
-
-
 try {
 
     /*
@@ -101,7 +97,6 @@ try {
 
     $img_uri = $_dir1 . $_file1;
 
-
     if (!defined('DirSite'))
         define('DirSite', $_SERVER['DOCUMENT_ROOT'] . '/sites/' . \Nyos\Nyos::$folder_now);
 
@@ -116,9 +111,6 @@ try {
             die(file_get_contents($_SERVER['DOCUMENT_ROOT'] . $_REQUEST['uri']));
         }
     }
-
-
-
 
 // если нет картинка
     if (isset($_dir1) && isset($_file1) && !file_exists(DR . $img_uri) && strpos($_file1, '@2x') !== false)
@@ -225,12 +217,18 @@ try {
 
 
 // режем квадрат из изображения с определённой длинной стороны
-    if (isset($_GET['type']) && $_GET['type'] == 'min' && isset($_GET['w_min']{0}) && is_numeric($_GET['w_min'])) {
+//    if (isset($_GET['type']) && $_GET['type'] == 'min' && isset($_GET['w_min']{0}) && is_numeric($_GET['w_min'])) {
+//        //$_GET['w_min'] = 300;
+//        \Nyos\nyos_image::creatThumbnailProporcii(\Nyos\nyos_image::$image, $_GET['w_min']);
+//    }
+// режем квадрат из изображения с определённой длинной стороны
+//    else
+        if (isset($_GET['type']) && $_GET['type'] == 'min' && isset($_GET['w']{0}) && is_numeric($_GET['w'])) {
         //$_GET['w_min'] = 300;
-        \Nyos\nyos_image::creatThumbnailProporcii(\Nyos\nyos_image::$image, $_GET['w_min']);
+        \Nyos\nyos_image::creatThumbnailProporcii(\Nyos\nyos_image::$image, $_GET['w']);
     }
 // режем квадрат из изображения с определённой длинной стороны
-    if (isset($_GET['type']) && $_GET['type'] == 'fix_w' && isset($_GET['w']{0}) && is_numeric($_GET['w'])) {
+    elseif (isset($_GET['type']) && $_GET['type'] == 'fix_w' && isset($_GET['w']{0}) && is_numeric($_GET['w'])) {
         //$_GET['w_min'] = 300;
         \Nyos\nyos_image::creatThumbnailProporcii(\Nyos\nyos_image::$image, $_GET['w']);
     }
