@@ -27,13 +27,18 @@ function sort_ar_head($a, $b) {
 
 function sort_ar_date($a, $b) {
 
-    if (!isset($a["date"]) || !isset($b["date"]))
+    if (!isset($a["date"]) || !isset($b["date"]) || $a["date"] == $b["date"])
         return 0;
 
-    if ($a["date"] == $b["date"]) {
-        return 0;
-    }
     return (strtotime($a["date"]) < strtotime($b["date"])) ? -1 : 1;
+}
+
+function sort_ar_date_desc($a, $b) {
+
+    if ($a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"]))
+        return 0;
+
+    return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
 }
 
 function sort_ar_start($a, $b) {
@@ -81,20 +86,6 @@ function sort_ar_str_fio($a, $b) {
     return ( $a[$pole] < $b[$pole] ) ? -1 : 1;
 }
 
-/**
- * 
- * @param type $a
- * @param type $b
- * @return int
- */
-function sort_ar_date_desc($a, $b) {
-
-    if ($a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"])) {
-        return 0;
-    }
-    return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
-}
-
 function sort_ar__iiko_checks_last_loaded__desc($a, $b) {
 
     $k = 'iiko_checks_last_loaded';
@@ -134,7 +125,6 @@ function sort_ar_date_int_desc($a, $b) {
 }
 
 // usort($a, "\\f\\sort_ar_date_desc");
-
 
 
 function strToHexByRtf($sString, $sEncoding = 'utf-8') {

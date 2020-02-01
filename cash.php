@@ -32,53 +32,97 @@ class Cash {
         }
     }
 
+    public static function clearCasheFromVars(array $vars) {
+
+        // \f\pa($vars, '', '', 'start clearCasheFromVars');
+
+        for ($nn = 1; $nn <= 10; $nn ++) {
+
+            $var_clear = [];
+
+            for ($n2 = 1; $n2 <= 10; $n2 ++) {
+                $kk = 'ajax_cash_delete' . $nn . '_' . $n2;
+                if (!empty($vars[$kk])) {
+                    // echo '<br/>' . __LINE__ . ' ' . $kk . ' > ' . $vars[$kk];
+                    $var_clear[] = $vars[$kk];
+                }
+            }
+
+//            \f\pa($var_clear);
+//            \f\pa($var_clear, '', '', 'self::deleteKeyPoFilter');
+
+            if (!empty($var_clear)) {
+                self::deleteKeyPoFilter($var_clear);
+            }
+        }
+    }
+
     /**
-     * удаляем все ключи
-     * @param string $filtr
+     * удаляем все ключи что содержат все строки из массива $filtr [ 'as' , 'ad' ]
+     * @param array $filtr
      */
     public static function deleteKeyPoFilter(array $filtr) {
 
+        // \f\pa($filtr, '', '', 'filtr');
+
         self::start();
 
-        $keys = self::$cache->get('keys');
-//        $keys[$var] = 1;
+        $delete_keys = [];
 
-        // \f\pa($keys);
+        $keys = self::$cache->get('keys');
+        // \f\pa($keys, '', '', 'keys');
+//        $keys[$var] = 1;
 
         if (!empty($keys))
             foreach ($keys as $k => $v) {
 
-                $delete_key = null;
+                $delete_key = true;
 
                 foreach ($filtr as $v1) {
-                    if (strpos($k, $v1) !== false) {
-                        // if ($delete_key === true || empty($delete_key))
-                        if ( empty($delete_key) )
+
+                    if (strpos($k, $v1) !== false && $delete_key === true) {
+// if ($delete_key === true || empty($delete_key))
+                        if (empty($delete_key))
                             $delete_key = true;
                     } else {
                         $delete_key = false;
+                        break;
                     }
                 }
 
+                // echo '<br/>' . $k . ' ' . ( $delete_key === true ? 'удаляем' : 'нет' );
+
                 if ($delete_key === true) {
+
                     $delete_keys[] = $k;
+                    // echo '<br/>delete ' . $k;
+                    
                     self::$cache->delete($k);
+
+                    // $ee = \f\Cash::$cache->get($k);
+                    // \f\pa($ee, '', '', 'date ' . $k);
+
+//                \f\Cash::$cache->delete('jobdesc__hoursonjob_calculateHoursOnJob_2020-01-02_sp1');
+//                $ee = \f\Cash::$cache->get('jobdesc__hoursonjob_calculateHoursOnJob_2020-01-02_sp1');
+//                \f\pa($ee,'','','2020-01-02 sp1');
+
                     unset($keys[$k]);
                 }
             }
 
-        //\f\pa($delete_keys,'','','$delete_keys');
+//\f\pa($delete_keys,'','','$delete_keys');
 
-        if (!self::$cache->add('keys', $keys, false, 0)) {
-            self::$cache->set('keys', $keys, false, 0);
-        }
+        self::setVar('keys', $keys);
 
+//        if (!self::$cache->add('keys', $keys, false, 0)) {
+//            self::$cache->set('keys', $keys, false, 0);
+//        }
 //        return self::$cache->add($var, $data, false, $time);
-        return;
+        return \f\end3('удалили записей ' . sizeof($delete_keys), true, $delete_keys);
 
         $keys = self::$cache->memcache_get();
-        // $keys = self::$cache->getAllKeys();
-        // \f\pa($keys);
+// $keys = self::$cache->getAllKeys();
+// \f\pa($keys);
 
         return;
 
@@ -88,7 +132,7 @@ class Cash {
             if (isset($item)) {
                 $cache->delete($item);
             }
-            //
+//
             elseif (preg_match('/' . $regex . '/', $item)) {
                 $cache->delete($item);
             }
@@ -121,20 +165,32 @@ class Cash {
      */
     public static function setVar(string $var, $data, $time = 0) {
 
-        self::start();
-        $keys = self::$cache->get('keys');
-        $keys[$var] = 1;
+        if ($var == 'keys') {
 
-        // echo '<br/>v ' . self::$version;
-        
-        if (!self::$cache->set('keys', $keys, false, 0)) {
-            self::$cache->add('keys', $keys, false, 0);
-        }
+            $e = self::$cache->set('keys', $data, false, 0);
 
-        if ( !self::$cache->set($var, $data, false, $time) ) {
-            self::$cache->add($var, $data, false, $time);
+            if ($e === false) {
+                echo '<br/>' . __FILE__ . ' ' . __LINE__;
+            }
+
+            if (!self::$cache->set('keys', $data, false, 0))
+                self::$cache->add('keys', $data, false, 0);
+        } else {
+
+            self::start();
+            $keys = self::$cache->get('keys');
+            $keys[$var] = 1;
+
+// echo '<br/>v ' . self::$version;
+
+            if (!self::$cache->set('keys', $keys, false, 0)) {
+                self::$cache->add('keys', $keys, false, 0);
+            }
+
+            if (!self::$cache->set($var, $data, false, $time)) {
+                self::$cache->add($var, $data, false, $time);
+            }
         }
-        
     }
 
 }
@@ -146,7 +202,7 @@ class Cash {
 if (!empty($_GET['memcache_clear']) && $_GET['memcache_clear'] == 'yes') {
 
     \f\Cash::allClear();
-    // \f\Cash::close();
+// \f\Cash::close();
     \f\redirect();
     exit;
 }
