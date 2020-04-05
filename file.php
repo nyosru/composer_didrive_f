@@ -86,7 +86,6 @@ class File {
                     unlink($file['name']);
                     $size_for_delete -= $file['size'] ?? 0;
                 }
-
             }
         } else {
             $txt2 .= PHP_EOL . 'Занято менее запланированного, ничего не трём';
@@ -137,6 +136,46 @@ class File {
 
         //возвращаем накопленное значение размеров
         return $totalsize;
+    }
+
+    public static function readXml($file) {
+
+        $return = [];
+
+        $reader = new XMLReader();
+        /**
+         * указываем ридеру что будем парсить этот файл
+         */
+        $reader->open($file);
+
+        // циклическое чтение документа
+        while ($reader->read()) {
+
+            if ($reader->nodeType == XMLReader::ELEMENT) {
+
+                // если находим элемент <card>
+                if ($reader->localName == 'card') {
+
+                    $data = array();
+
+                    // считываем аттрибут number
+                    $data['number'] = $reader->getAttribute('number');
+
+                    // читаем дальше для получения текстового элемента
+                    $reader->read();
+
+                    if ($reader->nodeType == XMLReader::TEXT) {
+                        $data['name'] = $reader->value;
+                    }
+
+                    // ну и запихиваем в бд, используя методы нашего адаптера к субд
+                    // SomeDataBaseAdapter::insertContact($data);
+                    $return[] = $data;
+                }
+            }
+        }
+
+        return $return;
     }
 
     /**
@@ -1242,9 +1281,9 @@ function copyDirectory($from_path, $to_path) {
  * @return string
  */
 function get_file_ext($f) {
-    
+
     return pathinfo($f, PATHINFO_EXTENSION);
-    
+
 //    $info = pathinfo($f);
 //    return strtolower($info['extension']);
 }

@@ -25,7 +25,7 @@ class Cash {
     }
 
     public static function close() {
-
+        // echo '<br/>'.__FILE__.' '.__LINE__;
         if (self::$run === true) {
             self::close();
             self::$run = false;
@@ -55,6 +55,24 @@ class Cash {
                 self::deleteKeyPoFilter($var_clear);
             }
         }
+    }
+
+    /**
+     * удаляем кеши фильтры для удаления лежат в отдельных массивах внутри 1 массива
+     * [ [ 'del' => 1 ], [ 'del' => 2 ] ]
+     * @param array $filtr
+     * @return type
+     */
+    public static function deleteKeyPoFilterMnogo(array $filtr) {
+
+        if (empty($filtr))
+            return \f\end3('пустой входящий массив', false);
+
+        $return = [];
+        foreach ($filtr as $v) {
+            $return[] = self::deleteKeyPoFilter($v);
+        }
+        return \f\end3('удалили', true, $return);
     }
 
     /**
@@ -96,12 +114,11 @@ class Cash {
 
                     $delete_keys[] = $k;
                     // echo '<br/>delete ' . $k;
-                    
+
                     self::$cache->delete($k);
 
                     // $ee = \f\Cash::$cache->get($k);
                     // \f\pa($ee, '', '', 'date ' . $k);
-
 //                \f\Cash::$cache->delete('jobdesc__hoursonjob_calculateHoursOnJob_2020-01-02_sp1');
 //                $ee = \f\Cash::$cache->get('jobdesc__hoursonjob_calculateHoursOnJob_2020-01-02_sp1');
 //                \f\pa($ee,'','','2020-01-02 sp1');
