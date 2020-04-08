@@ -56,7 +56,7 @@ class mailpost {
     }
 
     public static function ns_send($tema, $tpl_telo, $from_domain = null) {
-        
+
         //global $status;
         $status = '';
         //echo '<pre>'.htmlspecialchars($ClassTemplate->tpl_files[$tpl_telo]).'</pre>';
@@ -231,10 +231,9 @@ class mailpost {
                 return TRUE;
             }
         } else {
-            
+
             $status .= '[' . __LINE__ . '] email удачно отправлен с 1-го раза.<br>';
             return true;
-            
         }
 
         return true;
@@ -465,7 +464,6 @@ class mailpost {
         $dop['head'] = $head;
 
         //require_once ($_SERVER['DOCUMENT_ROOT'] . '/include/f/mail.php');
-
         // шлём через сенд пульс
         if (isset(self::$sendpulse_id{5}) && isset(self::$sendpulse_key{5})) {
 
@@ -495,7 +493,7 @@ class mailpost {
         // если не послали через сенд пульс, шлём обычным методом
         else {
 
-            require_once ($_SERVER['DOCUMENT_ROOT'] . '/include/f/ajax.php');
+            // require_once ($_SERVER['DOCUMENT_ROOT'] . '/include/f/ajax.php');
 
             self::$ns['from'] = $from;
             self::$ns['to'] = $to;
@@ -510,7 +508,14 @@ class mailpost {
             if (strpos($tpl, 'smarty') && file_exists($_SERVER['DOCUMENT_ROOT'] . DS . 'template-mail' . DS . $tpl . '.htm')) {
                 $dop['stat_mail_send'] = __LINE__;
                 //$vars['text'] = $dop['text'];
-                require_once( $_SERVER['DOCUMENT_ROOT'] . '/include/f/smarty.php' );
+                // require_once( $_SERVER['DOCUMENT_ROOT'] . '/include/f/smarty.php' );
+                require_once( $_SERVER['DOCUMENT_ROOT']
+                        . DS . 'vendor'
+                        . DS . 'didrive_mod'
+                        . DS . 'myshop'
+                        . DS . '2'
+                        . DS . 'smarty.php' ); // название файла библиотеки
+
                 self::$body = f\compileSmarty($tpl . '.htm', $dop, $_SERVER['DOCUMENT_ROOT'] . DS . 'template-mail');
             }
             //
