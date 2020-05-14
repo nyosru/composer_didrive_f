@@ -35,7 +35,7 @@ function sort_ar_date($a, $b) {
 
 function sort_ar_date_desc($a, $b) {
 
-    if ($a["date"] == $b["date"] || !isset($a["date"]) || !isset($b["date"]))
+    if ( ( isset($a["date"]) && isset($b["date"]) && $a["date"] == $b["date"] )  || !isset($a["date"]) || !isset($b["date"]))
         return 0;
 
     return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
