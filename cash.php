@@ -164,7 +164,7 @@ class Cash {
     public static function getVar(string $var) {
         self::start();
         $vars = self::$cache->get($var);
-        return (!empty($vars) ) ? $vars : false;
+        return $vars ?? false;
     }
 
     /**

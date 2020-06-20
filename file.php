@@ -47,13 +47,14 @@ class File {
 
         self::$delete_files = true;
 
-        $txt2 = 'Ищем файлы что лежат на сервере более ' . $day_to_old_photo . ' суток';
+        $txt2 = '';
 
-        self::$filtr_date_unix_menee = strtotime(date('Y-m-d 09:00:00', $_SERVER['REQUEST_TIME']) . ' -' . $day_to_old_photo . ' day');
-
-        $file_list = self::listFileInDir($dir, 1);
-
-        $txt2 .= PHP_EOL . 'удалено файлов: ' . sizeof($file_list) . ' (' . round(self::$all_size / 1024 / 1024, 2) . ' Mb)';
+        if (!isset($_REQUEST['only_size'])) {
+            $txt2 .= 'Ищем файлы что лежат на сервере более ' . $day_to_old_photo . ' суток';
+            self::$filtr_date_unix_menee = strtotime(date('Y-m-d 09:00:00', $_SERVER['REQUEST_TIME']) . ' -' . $day_to_old_photo . ' day');
+            $file_list = self::listFileInDir($dir, 1);
+            $txt2 .= PHP_EOL . 'удалено файлов: ' . sizeof($file_list) . ' (' . round(self::$all_size / 1024 / 1024, 2) . ' Mb)';
+        }
 
         $txt2 .= PHP_EOL . PHP_EOL . 'Проверяем сколько места занято';
         $txt2 .= PHP_EOL . 'Максимум:' . number_format($max_size / 1024 / 1024, 1, '.', '`') . ' Mb';
@@ -180,6 +181,7 @@ class File {
 
     /**
      * список файлов с размерами
+     * ( удаляем все файлы .log )
      * @param type $dir
      * @return int
      */
@@ -213,6 +215,12 @@ class File {
 
                 //если это файл - накапливаем его размер
                 elseif (file_exists($name)) {
+
+                    if (strpos($name, '.log') !== false) {
+                        unlink($name);
+                        continue;
+                    }
+
                     // echo '<br/>'. __LINE__.' dir '. $name;
                     // $totalsize += filesize($name);
                     // echo '<br/>' . __LINE__ . ' file ' . $name;

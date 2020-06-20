@@ -124,6 +124,71 @@ function sort_ar_date_int_desc($a, $b) {
     return $a["date"] > $b["date"] ? 1 : -1;
 }
 
+
+
+/**
+ * сортировка от большего к меньшему
+ * месячные ограничения
+ * usort($ar, "\\f\\sort_ar__salary_oborot_m_desc");
+ * @param int $a
+ * @param int $b
+ * @return int
+ */
+function sort_ar__salary_oborot_m_desc($a, $b) {
+
+    $k = 'oborot_sp_last_monht_bolee';
+
+    if (empty($a[$k]))
+        $a[$k] = 0;
+
+    if (empty($b[$k]))
+        $b[$k] = 0;
+
+    if ($a[$k] != $b[$k]) {
+        return ( $a[$k] < $b[$k] ) ? 1 : -1;
+    } else {
+        //if ( $a[$k] == $b[$k] || !isset($a[$k]) || !isset($b[$k] ) ){
+        return 0;
+    }
+
+    //return (strtotime($a[$k]) < strtotime($b[$k])) ? 1 : -1;
+}
+/**
+ * сортировка от большего к меньшему
+ * дневные ограничения
+ * usort($res_items, "\\f\\sort_ar__salary_oborot_d_desc");
+ * @param int $a
+ * @param int $b
+ * @return int
+ */
+function sort_ar__salary_oborot_d_desc($a, $b) {
+
+    $k = 'pay_from_day_oborot_bolee';
+
+    if (empty($a[$k]))
+        $a[$k] = 0;
+
+    if (empty($b[$k]))
+        $b[$k] = 0;
+
+    if ($a[$k] != $b[$k]) {
+        return ( $a[$k] < $b[$k] ) ? 1 : -1;
+    } else {
+        //if ( $a[$k] == $b[$k] || !isset($a[$k]) || !isset($b[$k] ) ){
+        return 0;
+    }
+
+    //return (strtotime($a[$k]) < strtotime($b[$k])) ? 1 : -1;
+}
+
+
+
+
+
+
+
+
+
 // usort($a, "\\f\\sort_ar_date_desc");
 
 
