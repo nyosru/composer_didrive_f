@@ -58,6 +58,124 @@ function getSql($db, $sql, $key = 'id') {
     return $res;
 }
 
+function db_creat_local_table($db, string $module, $table_new = null, $remove_table = false) {
+
+    //die('2341');
+
+    if (empty($table_new))
+        $table_new = 'mod_' . \f\translit($module, 'uri2');
+
+    $d = \Nyos\mod\items::get($db, $module);
+
+    if (!empty($d)) {
+
+        $new = [];
+
+        foreach ($d as $k => $v) {
+            foreach ($v as $k1 => $v1) {
+                if (!isset($new[$k1]))
+                    $new[$k1] = $v1;
+            }
+        }
+    }
+
+//    echo '<br/>#'.__LINE__.' '.dir_site_module;
+//    echo '<br/>#'.__LINE__.' '.dir_serv_mod;
+//CREATE TABLE `mod_jobman` (
+//  `id` int(11) NOT NULL,
+//  `family` varchar(100) DEFAULT NULL,
+//  `name` varchar(100) DEFAULT NULL,
+//  `soname` varchar(100) DEFAULT NULL,
+//  `iiko_name` varchar(150) DEFAULT NULL,
+//  `iiko_id` varchar(150) DEFAULT NULL,
+//  `code` varchar(50) DEFAULT NULL,
+//  `login` varchar(50) DEFAULT NULL,
+//  `mainRoleCode` varchar(50) DEFAULT NULL,
+//  `roleCodes` varchar(50) DEFAULT NULL,
+//  `cellPhone` varchar(50) DEFAULT NULL,
+//  `email` varchar(100) DEFAULT NULL,
+//  `departmentCodes_0` varchar(50) DEFAULT NULL,
+//  `departmentCodes_1` varchar(50) DEFAULT NULL,
+//  `departmentCodes_2` varchar(50) DEFAULT NULL,
+//  `deleted` set('true','false') DEFAULT NULL,
+//  `supplier` set('true','false') DEFAULT NULL,
+//  `employee` set('true','false') DEFAULT NULL,
+//  `client` set('true','false') DEFAULT NULL,
+//  `birthday` date DEFAULT NULL,
+//  `iiko_checks_last_loaded` datetime DEFAULT NULL,
+//  `hireDate` date DEFAULT NULL
+//) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+//
+//ALTER TABLE `mod_jobman`
+//  ADD UNIQUE KEY `id` (`id`);
+//COMMIT;
+//    \f\pa(\Nyos\nyos::$menu[$module]);
+//    \f\pa($new);
+
+    if ($remove_table == true) {
+
+        try {
+
+            $s = $db->prepare('DROP TABLE IF EXISTS ' . $table_new . ' ');
+            $s->execute();
+
+//        $s = $db->prepare('DROP TABLE IF EXISTS :table ');
+//        $s->execute([':table' => $table_new]);
+        } catch (\Exception $exc) {
+            //echo $exc->getTraceAsString();
+            \f\pa($exc);
+        } catch (\PDOException $exc) {
+            \f\pa($exc);
+        }
+//    }
+//
+//    if (1 == 1) {
+        // $sql_in = [':table' => $table_new];
+        $sql_in = [];
+        $sql_setup = 'CREATE TABLE `' . $table_new . '` ( `id` int(11) NOT NULL ';
+
+        $n = 0;
+
+        foreach ($new as $k => $v) {
+
+            if ($k == 'id')
+                continue;
+
+            if (isset(\Nyos\nyos::$menu[$module][$k]['type']) && \Nyos\nyos::$menu[$module][$k]['type'] == 'date') {
+                $sql_setup .= ' , `' . $k . '` date DEFAULT NULL ';
+            } else {
+                $sql_setup .= ' , `' . $k . '` varchar(150) DEFAULT NULL ';
+            }
+
+            $n++;
+        }
+
+        $sql_setup .= ' ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
+
+        \f\pa($sql_setup);
+
+        try {
+
+            $sql = $db->prepare($sql_setup);
+            $sql->execute($sql_in);
+
+            //$sql_in = [':table' => $table_new];
+            $sql_in = [];
+            $sql = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD UNIQUE KEY `id` (`id`); ');
+            $sql->execute($sql_in);
+        } catch (\Exception $exc) {
+            //echo $exc->getTraceAsString();
+            \f\pa($exc);
+        } catch (\PDOException $exc) {
+            \f\pa($exc);
+        }
+    }
+
+    \f\db\sql_insert_mnogo($db, $table_new, $d);
+
+    return \f\end3('ok', true);
+}
+
 /**
  * добавление записи в БД (PDO)
  * @global type $status
@@ -165,14 +283,13 @@ function pole_list($db, string $table) {
 //            'add_t' => 1,
 //        ];
 //    }
-
     // echo '<br/>tt '.__LINE__.' - ' . $table;
-    
+
     if (!empty($cash_db['pole_list'][$table]))
         return $cash_db['pole_list'][$table];
 
     // echo '<br/>tt '.__LINE__.' - ' . $table;
-    
+
     if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
 
         // echo '<Br/>' . __LINE__;

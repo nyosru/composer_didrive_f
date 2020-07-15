@@ -41,6 +41,22 @@ function sort_ar_date_desc($a, $b) {
     return (strtotime($a["date"]) < strtotime($b["date"])) ? 1 : -1;
 }
 
+function sort_ar__start_time__asc($a, $b) {
+$val = 'start';
+    if (!isset($a[$val]) || !isset($b[$val]) || $a[$val] == $b[$val])
+        return 0;
+
+    return (strtotime($a[$val]) > strtotime($b[$val])) ? -1 : 1;
+}
+function sort_ar__start_time__desc($a, $b) {
+$val = 'start';
+    if (!isset($a[$val]) || !isset($b[$val]) || $a[$val] == $b[$val])
+        return 0;
+
+    return (strtotime($a[$val]) < strtotime($b[$val])) ? -1 : 1;
+}
+
+
 function sort_ar_start($a, $b) {
 
     $pole = 'start';
