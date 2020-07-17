@@ -67,17 +67,18 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
 
     $d = \Nyos\mod\items::get($db, $module);
 
-    if (!empty($d)) {
+    if (empty($d))
+        return \f\end3('нет данных в исходной таблице', false);
 
-        $new = [];
+    $new = [];
 
-        foreach ($d as $k => $v) {
-            foreach ($v as $k1 => $v1) {
-                if (!isset($new[$k1]))
-                    $new[$k1] = $v1;
-            }
+    foreach ($d as $k => $v) {
+        foreach ($v as $k1 => $v1) {
+            if (!isset($new[$k1]))
+                $new[$k1] = $v1;
         }
     }
+
 
 //    echo '<br/>#'.__LINE__.' '.dir_site_module;
 //    echo '<br/>#'.__LINE__.' '.dir_serv_mod;
@@ -329,93 +330,6 @@ function pole_list($db, string $table) {
     throw new \Exception('Не достали поля');
 }
 
-function db2_insert_old1904007($db2, $table, $var_array, $slash = false, $return = null) {
-
-    if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
-        GLOBAL $status;
-
-//GLOBAL $status, $debug;
-// вряме на выполнение
-
-        if (function_exists('timer')) {
-            $timer_rand = rand(5654, 987987);
-            timer('db_insert' . $timer_rand, 'старт');
-        }
-
-        $status .= '<table><tr><td width="15" bgcolor="#DDDD33" align="center" nowrap style="direction: ltr; writing-mode:  tb-rl;"><b>DB_insert</b></td><td bgcolor="#EFedDE"> <b>функция ' . __FUNCTION__ . '</b> <br>'
-                . 'Используется таблица <strong>' . $table . '</strong>.<br>';
-    }
-//reset ($var_array);
-// перебираем массив с переменными и компилируем переменные
-    $AllFieldName = pole2_list($db2, $table);
-
-    $all_val = $all_key = '';
-
-    //foreach ($var_array as $key => $val) {
-    foreach ($AllFieldName as $key => $val) {
-
-        if (!isset($var_array[$key])) {
-
-            if (isset($_SESSION['status1']) && $_SESSION['status1'] === true)
-                $status .= '<br/>поле |' . ( isset($key) ? $key : '--' ) . '| <strike>заполнено</strike> [' . ( isset($var_array[$key]) ? $var_array[$key] : '--' ) . ']';
-
-            continue;
-        }
-
-// echo 'Переменная <strong>' . $key . '</strong> = <u>' . $val . '</u><br>';
-        if (isset($_SESSION['status1']) && $_SESSION['status1'] === true)
-            $status .= '<br/>Переменная <strong>' . $key . '</strong> = <u>' . $var_array[$key] . '</u>';
-
-        $all_val .= isset($all_val{1}) ? ',' : '';
-        $all_key .= isset($all_key{1}) ? ',' : '';
-
-        //if( strlen($val)<0 || $val == '')
-        if ($var_array[$key] == 'null' || $var_array[$key] == 'NULL') {
-            $all_val .= ' NULL';
-            // $debug['sql_struktura'][$key] = $val;
-        } elseif ($var_array[$key] == 'NOW()' || $var_array[$key] == 'NOW') {
-            $all_val .= ' NOW()';
-        } else {
-            $all_val .= ($slash == 'no' || $slash === false ) ? '\'' . $var_array[$key] . '\'' : '\'' . addslashes($var_array[$key]) . '\'';
-        }
-
-        $all_key .= ' `' . $key . '`';
-    }
-
-    if (isset($all_key{1}) && isset($all_val{1}))
-        $res = $db2->sql_query('INSERT INTO `' . $table . '` ( ' . $all_key . ' ) VALUES ( ' . $all_val . ' );');
-
-// вряме на выполнение
-    if (isset($_SESSION['status1']) && $_SESSION['status1'] === true && function_exists('timer')) {
-        timer('db_insert' . $timer_rand, 'конец');
-        timer('db_insert' . $timer_rand, 'итог');
-    }
-
-    if ($return == 'last_id') {
-
-        // $db2->db_connect_id->insert_id;
-
-        if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
-            $status .= '<br/>добавлен id: ' . $db2->db_connect_id->insert_id . '</td></tr></table> '
-                    . '<span class="bot_line">#' . __LINE__ . '</span></fieldset>';
-        }
-
-        return $db2->db_connect_id->insert_id;
-    } else {
-
-        if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
-            $status .= '</td></tr></table> '
-                    . '<span class="bot_line">#' . __LINE__ . '</span></fieldset>';
-        }
-
-        if (isset($res) && $res === TRUE) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-    }
-}
-
 /**
  * достаём количество строчек в результате запроса
  * @global type $status
@@ -442,6 +356,7 @@ function getSqlNumRows($db, $sql) {
 
 /**
  * добавление многих записей в бд ( PDO + исключения )
+ * это новая версия от 200718
  * @param type $db
  * @param string $table
  * @param type $data
@@ -462,27 +377,12 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
 
     try {
 
-        //\f\pa($table,2,null,'table');
-        //\f\pa($key, 2, null, 'key');
-        //\f\pa($rows, 2, null, 'rows');
-
-        $list_polya = \f\db\pole_list($db, $table);
-        //\f\pa($list_polya, 2, null, '$list_polya');
-        //\f\pa($key, 2, null, '$key');
-        // \f\pa($rows, 2, null, '$rows');
-
+        $list_polya0 = \f\db\pole_list($db, $table);
+        $list_polya = array_keys($list_polya0);
         $indb = [];
-        //$indb[':table'] = $table;
-        //$str_v = $sql_key_str = '';
-
-
         $nn = 1;
-
         $val_str = '';
-        //$indb = [];
-
         $str_v2 = '';
-
 
         if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
             
@@ -490,62 +390,44 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
             $db->exec('BEGIN IMMEDIATE;');
         }
 
+        $ss = '';
+        $indb = [];
+
         foreach ($rows as $k => $v) {
-
-            $polya_in = [];
-            foreach ($v as $k2 => $v2) {
-
-                if (isset($list_polya[$k2]) && !isset($polya_in[$k2]))
-                    $polya_in[$k2] = 1;
-            }
-
-            foreach ($key as $k2 => $v2) {
-
-                if (isset($list_polya[$k2]))
-                    $polya_in[$k2] = 1;
-            }
-
-            $sql_key_str = '';
-
-            foreach ($polya_in as $k4 => $v4) {
-                $sql_key_str .= (!empty($sql_key_str) ? ',' : '' ) . ' `' . \addslashes($k4) . '` ';
-            }
-
-//            foreach ($key as $k0 => $v0) {
-//                $v[$k0] = $v0;
-//            }
-            //\f\pa($v);
             $str_v2 = '';
-            $indb = [];
 
-            foreach ($polya_in as $k1 => $v1) {
-
-//                if( isset( $key[$k1] ) )
-//                $v1 = $key[$k1];
-
-                $var_mask = ':' . $k1 . '_' . $nn;
-
+            $nn0 = 1;
+            
+            foreach ($list_polya as $k1) {
+                // $var_mask = ':' . $k1 . '_' . $nn;
+                $var_mask = ':v' . $nn.'_' . $nn0;
                 $str_v2 .= ( isset($str_v2{1}) ? ',' : '' ) . ' ' . $var_mask . ' ';
-                $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? null;
+                $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? NULL;
+                $nn0++;
             }
 
-            // $val_str .= (!empty($val_str) ? ',' : '' ) . '(' . $str_v2 . ')';
-
-            $s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
-            // echo '<hr>';
-            // echo $s;
-            //echo '<hr>';
-            // \f\pa($indb, 2);
-            $sql = $db->prepare($s);
-            $sql->execute($indb);
-
+            $ss .= (!empty($ss) ? ',' : '' ) . ' (' . $str_v2 . ')';
             $nn++;
+
+            if ($nn > $items_in_query) {
+                $nn = 0;
+                $s = 'INSERT INTO `' . $table . '` ( `' . ( implode('`, `', $list_polya) ) . '` ) VALUES ' . $ss . ' ;';
+                $ss = '';
+                // echo '<br/>#'.__LINE__.'<div>'.$s.'</div>';
+                $sql = $db->prepare($s);
+                $sql->execute($indb);
+                $indb = [];
+            }
         }
 
-        // \f\pa($indb);
-        //$s = 'INSERT INTO `' . $table . '` (' . $sql_key_str . ') VALUES (' . $str_v2 . ') ;';
-        // $str_v .= ( isset($str_v{2}) ? ',' : '' ) . ' ( ' . $str_v2 . ' ) ';
-        // $nn++;
+        $s = 'INSERT INTO `' . $table . '` ( `' . ( implode('`, `', $list_polya) ) . '` ) VALUES ' . $ss . ' ;';
+        $ss = '';
+        // echo '<br/>#'.__LINE__.'<div>'.$s.'</div>';
+        $sql = $db->prepare($s);
+//                if( $table == 'mod_071_set_oplata' )
+//                \f\pa($indb, 2);
+        $sql->execute($indb);
+        $indb = [];
 
         if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
             
@@ -558,185 +440,11 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
     } catch (\PDOException $ex) {
 
         echo '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-        . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-        . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-        . PHP_EOL . $ex->getTraceAsString()
+        . PHP_EOL . \f\pa($ex,'html2')
         . '</pre>';
     }
 
-//    $db->exec('BEGIN IMMEDIATE;');
-//    $stmt->execute($params);
-//    $db->exec('COMMIT;');
-
     return true;
-}
-
-/**
- * добавление многих записей в бд (PDO) old
- * @param type $db
- * @param string $table
- * @param type $data
- * @param type $key
- * @param bool $slash
- * @param type $items_in_query
- */
-function sql_insert_mnogo_old190424($db, string $table, $data, $key = array(), bool $slash = true, $items_in_query = 500) {
-
-    if (sizeof($data) > 0) {
-        
-    } else {
-        return false;
-    }
-
-
-    $list_polya = \f\db\pole_list($db, $table);
-    // \f\pa($list_polya);
-
-    $polya = array();
-
-    if (isset($key) && sizeof($key) > 0) {
-        foreach ($list_polya as $k => $v) {
-            if (isset($key[$k]))
-                $polya[$k] = $key[$k];
-        }
-    }
-
-    foreach ($data as $k => $v) {
-        foreach ($v as $k2 => $v2) {
-
-            if (!isset($list_polya[$k2]))
-                continue;
-
-            if (!isset($polya[$k2]))
-                $polya[$k2] = null;
-        }
-    }
-
-// формируем стартовую строку +
-    $sql_key_str = '';
-
-    foreach ($polya as $k => $v) {
-        $sql_key_str .= ( isset($sql_key_str{0}) ? ', ' : '' ) . '`' . $k . '`';
-    }
-
-    $sql_str = 'INSERT INTO `' . addslashes($table) . '` (' . $sql_key_str . ') VALUES ';
-
-    // счётчик проходов цикла
-    $ssa = 0;
-
-    // запрос с данными
-    $text = '';
-
-    foreach ($data as $kk => $vv) {
-
-        if ($ssa == $items_in_query && isset($text{10})) {
-
-            // $b = $sql_str . ' ' . $text . ' ;';
-            // echo '<br/><br/>' . $b;
-            // $s2 = $db->prepare($b);
-            $s2 = $db->prepare($sql_str . ' ' . $text . ' ;');
-            //$s2 = $db->prepare($sql_str . ' ' . $text . ' ;');
-            $s2->execute();
-
-            $text = '';
-            $ssa = 0;
-        }
-
-        $sql_text = '';
-        // $sql_text = (isset($text{5})) ? ', ' : '' ;
-        // echo '<br/>';
-        // echo '<br/>';
-
-        foreach ($polya as $k => $v) {
-
-            //echo '<Br/>'.$k.' - '. $v ;
-
-            if (isset($vv[$k])) {
-                // echo '<br/>'.$k.'-'.$vv[$k];
-                // echo '<br/>'.$k.'-'.$vv[$k].'-'.$v;
-                $v = $vv[$k];
-                // echo '<Br/>'.$v;
-            }
-
-            if (isset($v)) {
-
-                if (isset($sql_text{0}))
-                    $sql_text .= ', ';
-
-                // echo '<br/>'.$k.'-'.$v;
-
-                if ($v == '' || $v === null) {
-                    $sql_text .= 'NULL';
-                } elseif ($v == 'NOW') {
-                    $sql_text .= 'NOW()';
-                } else {
-                    $sql_text .= '\'' . addslashes($v) . '\'';
-                }
-            } else {
-
-                if (isset($sql_text{0}))
-                    $sql_text .= ', ';
-
-                $sql_text .= 'NULL';
-            }
-        }
-
-        $text .= ( (isset($text{5})) ? ', ' : '' ) . '(' . $sql_text . ')';
-
-        $ssa++;
-    }
-
-// если что то осталось то выполняем запрос    
-    if (isset($text{5})) {
-
-        $b = $sql_str . ' ' . $text . ' ;';
-        echo '<br/><br/>' . $b;
-
-        $s2 = $db->prepare($b);
-        //$s2 = $db->prepare($sql_str . ' ' . $text . ' ;');
-        $s2->execute();
-    }
-}
-
-function pole2_list_old($db, $table, $prosto = FALSE) {
-    return pole_list($db, $table, $prosto);
-}
-
-function pole_list_old($db, $table, $prosto = FALSE) {
-
-    if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
-        global $status;
-        $status .= '<fieldset class="status" ><legend>' . __CLASS__ . ' #' . __LINE__ . ' + ' . __FUNCTION__ . '</legend>';
-    }
-
-    $FileCh = $_SERVER['DOCUMENT_ROOT'] . '/0.zip/mysql-table_polya-' . $table . '.arr.cash24';
-// echo filemtime($FileCh)-(3600*24*5).' > '.$_SERVER['REQUEST_TIME'];
-
-    if (is_file($FileCh) && ( filectime($FileCh) + (3600 * 48) ) > $_SERVER['REQUEST_TIME'] && (!isset($_SESSION['status1']) || ( isset($_SESSION['status1']) && $_SESSION['status1'] !== true ) )) {
-
-        $ar = unserialize(file_get_contents($FileCh));
-    } else {
-
-        if (is_file($FileCh))
-            unlink($FileCh);
-
-        $ar = array();
-
-        $sql = $db->sql_query('SELECT INFORMATION_SCHEMA.COLUMNS.* FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=\'' . addslashes($table) . '\' ;');
-        if ($db->sql_numrows($sql) > 0) {
-            while ($res = $db->sql_fr($sql)) {
-                $ar[$res['COLUMN_NAME']] = $res;
-            }
-        }
-
-        file_put_contents($FileCh, serialize($ar));
-    }
-
-    if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
-        $status .= f\pa2($ar) . '<span class="bot_line">#' . __LINE__ . '</span></fieldset>';
-    }
-
-    return $ar;
 }
 
 function SqlMind_insert_mnogo($db, $table, $SlKey, $data, $slash = FALSE, $delaed = true) {
