@@ -5,9 +5,9 @@ namespace Nyos\mod;
 use f as f;
 use Sendpulse as Sendpulse;
 
-if (!defined('IN_NYOS_PROJECT'))
-    die('Сработала защита <b>class MySQL</b> от злостных розовых хакеров.
-	<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут... ..');
+//if (!defined('IN_NYOS_PROJECT'))
+//    die('Сработала защита <b>class MySQL</b> от злостных розовых хакеров.
+//	<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут... ..');
 
 define("class_mail2", true);
 

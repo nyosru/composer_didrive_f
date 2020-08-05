@@ -4,9 +4,9 @@ namespace f\db;
 
 // use f as f;
 
-if (!defined('IN_NYOS_PROJECT'))
-    die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
-            '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут... .');
+//if (!defined('IN_NYOS_PROJECT'))
+//    die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
+//            '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут... .');
 
 /**
  * 
@@ -133,17 +133,19 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
 //    if (1 == 1) {
         // $sql_in = [':table' => $table_new];
         $sql_in = [];
-        $sql_setup = 'CREATE TABLE `' . $table_new . '` ( `id` int(11) NOT NULL ';
+        $sql_setup = 'CREATE TABLE `' . $table_new . '` ( `id` int(11) NOT NULL AUTO_INCREMENT ';
 
         $n = 0;
 
         foreach ($new as $k => $v) {
 
-            if ($k == 'id')
+            if ($k == 'id' || $k == 'status' )
                 continue;
 
-            if (isset(\Nyos\nyos::$menu[$module][$k]['type']) && \Nyos\nyos::$menu[$module][$k]['type'] == 'date') {
+            if (isset(\Nyos\nyos::$menu[$module][$k]['type']) && \Nyos\nyos::$menu[$module][$k]['type'] == 'date' ) {
                 $sql_setup .= ' , `' . $k . '` date DEFAULT NULL ';
+            }elseif ( $k == 'jobman' || $k == 'sale_point' || $k == 'sort' ) {
+                $sql_setup .= ' , `' . $k . '` int(9) DEFAULT NULL ';
             } else {
                 $sql_setup .= ' , `' . $k . '` varchar(150) DEFAULT NULL ';
             }
@@ -151,9 +153,9 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
             $n++;
         }
 
-        $sql_setup .= ' ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
+        $sql_setup .= ' , `status` set(\'show\',\'hide\',\'delete\') NOT NULL DEFAULT \'show\' ,  UNIQUE (`id`)  ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
 
-        \f\pa($sql_setup);
+        // \f\pa($sql_setup);
 
         try {
 
@@ -162,8 +164,26 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
 
             //$sql_in = [':table' => $table_new];
             $sql_in = [];
-            $sql = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD UNIQUE KEY `id` (`id`); ');
-            $sql->execute($sql_in);
+            // ALTER TABLE `mod_jobman_send_on_sp` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;
+//            $sql = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD UNIQUE KEY `id` (`id`); ');
+//            $sql->execute($sql_in);
+//            $sql1 = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT; ');
+//            $sql1->execute($sql_in);
+
+
+            foreach ($new as $k => $v) {
+                if ($k == 'jobman' 
+                        || $k == 'date'
+                        || $k == 'date_now'
+                        || $k == 'start'
+                        || $k == 'status'
+                        || $k == 'sale_point'
+                        ) {
+                    $sql = $db->prepare('ALTER TABLE  `' . $table_new . '` ADD INDEX(`'.$k.'`);');
+                    $sql->execute();
+                }
+            }
+            
         } catch (\Exception $exc) {
             //echo $exc->getTraceAsString();
             \f\pa($exc);
@@ -397,10 +417,10 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
             $str_v2 = '';
 
             $nn0 = 1;
-            
+
             foreach ($list_polya as $k1) {
                 // $var_mask = ':' . $k1 . '_' . $nn;
-                $var_mask = ':v' . $nn.'_' . $nn0;
+                $var_mask = ':v' . $nn . '_' . $nn0;
                 $str_v2 .= ( isset($str_v2{1}) ? ',' : '' ) . ' ' . $var_mask . ' ';
                 $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? NULL;
                 $nn0++;
@@ -440,7 +460,7 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
     } catch (\PDOException $ex) {
 
         echo '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-        . PHP_EOL . \f\pa($ex,'html2')
+        . PHP_EOL . \f\pa($ex, 'html2')
         . '</pre>';
     }
 
