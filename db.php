@@ -137,11 +137,24 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
 
         $n = 0;
 
+//        if( $module != '072.plus' )
+//            return[];
+        
+        foreach ( \Nyos\nyos::$menu[$module] as $k => $v) {
+//            \f\pa($k);
+//            \f\pa($v);
+            if( isset($v['type']) or isset($v['name_rus']) ){
+                $new[$k] = 1;
+            }
+        }
+
+        // \f\pa( [ $module , $table_new , $new ] );
+        
         foreach ($new as $k => $v) {
 
             if ($k == 'id' || $k == 'status' )
                 continue;
-
+            
             if (isset(\Nyos\nyos::$menu[$module][$k]['type']) && \Nyos\nyos::$menu[$module][$k]['type'] == 'date' ) {
                 $sql_setup .= ' , `' . $k . '` date DEFAULT NULL ';
             }elseif ( $k == 'jobman' || $k == 'sale_point' || $k == 'sort' ) {
