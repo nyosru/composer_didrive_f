@@ -299,8 +299,11 @@ function pa2($a) {
  * @param type $show_file_lie_otkuda_vuzov
  * @return type
  */
-function pa($g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda_vuzov = true) {
+function pa( $g, $type = null, $type2 = null, $name = null, $show_file_lie_otkuda_vuzov = true) {
 
+//    if( sizeof( $g ) > 0 )
+//    $g = (array) $g;
+    
 //    if ( !empty($show_obr) && $show_obr == 'html-special') {
 //        foreach ($g as $k => $v) {
 //            echo PHP_EOL . PHP_EOL . 'k - ' . htmlspecialchars($k)

@@ -60,6 +60,8 @@ function getSql($db, $sql, $key = 'id') {
 
 function db_creat_local_table($db, string $module, $table_new = null, $remove_table = false) {
 
+    return false;
+    
     //die('2341');
 
     if (empty($table_new))
