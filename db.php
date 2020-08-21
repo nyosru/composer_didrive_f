@@ -3,7 +3,6 @@
 namespace f\db;
 
 // use f as f;
-
 //if (!defined('IN_NYOS_PROJECT'))
 //    die('Сработала защита <b>функций MySQL</b> от злостных розовых хакеров.' .
 //            '<br>Приготовтесь к DOS атаке (6 поколения на ip-' . $_SERVER["REMOTE_ADDR"] . ') в течении 30 минут... .');
@@ -60,17 +59,33 @@ function getSql($db, $sql, $key = 'id') {
 
 function db_creat_local_table($db, string $module, $table_new = null, $remove_table = false) {
 
-    return false;
-    
+    if (strpos($_SERVER['HTTP_HOST'], 'adom') !== false)
+        throw new \Exception('удалять старые базы низя');
+
     //die('2341');
 
     if (empty($table_new))
         $table_new = 'mod_' . \f\translit($module, 'uri2');
 
-    $d = \Nyos\mod\items::get($db, $module);
+    try {
+
+        $d = \Nyos\mod\items::get_older($db, $module);
+    } catch (\Exception $exc) {
+        \f\pa($exc);
+//    } catch ( \Throwble $exc)  {
+//        \f\pa($exc);
+    } catch (\PDOException $exc) {
+        \f\pa($exc);
+    }
+    // return \f\end3('line '.__LINE__);
 
     if (empty($d))
         return \f\end3('нет данных в исходной таблице', false);
+
+    // \f\pa( sizeof( $d) );
+    // return false;
+    // \f\pa(345);
+    // return \f\end3('werwe');
 
     $new = [];
 
@@ -81,124 +96,11 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
         }
     }
 
-
-//    echo '<br/>#'.__LINE__.' '.dir_site_module;
-//    echo '<br/>#'.__LINE__.' '.dir_serv_mod;
-//CREATE TABLE `mod_jobman` (
-//  `id` int(11) NOT NULL,
-//  `family` varchar(100) DEFAULT NULL,
-//  `name` varchar(100) DEFAULT NULL,
-//  `soname` varchar(100) DEFAULT NULL,
-//  `iiko_name` varchar(150) DEFAULT NULL,
-//  `iiko_id` varchar(150) DEFAULT NULL,
-//  `code` varchar(50) DEFAULT NULL,
-//  `login` varchar(50) DEFAULT NULL,
-//  `mainRoleCode` varchar(50) DEFAULT NULL,
-//  `roleCodes` varchar(50) DEFAULT NULL,
-//  `cellPhone` varchar(50) DEFAULT NULL,
-//  `email` varchar(100) DEFAULT NULL,
-//  `departmentCodes_0` varchar(50) DEFAULT NULL,
-//  `departmentCodes_1` varchar(50) DEFAULT NULL,
-//  `departmentCodes_2` varchar(50) DEFAULT NULL,
-//  `deleted` set('true','false') DEFAULT NULL,
-//  `supplier` set('true','false') DEFAULT NULL,
-//  `employee` set('true','false') DEFAULT NULL,
-//  `client` set('true','false') DEFAULT NULL,
-//  `birthday` date DEFAULT NULL,
-//  `iiko_checks_last_loaded` datetime DEFAULT NULL,
-//  `hireDate` date DEFAULT NULL
-//) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-//
-//ALTER TABLE `mod_jobman`
-//  ADD UNIQUE KEY `id` (`id`);
-//COMMIT;
-//    \f\pa(\Nyos\nyos::$menu[$module]);
-//    \f\pa($new);
-
-    if ($remove_table == true) {
-
+    // удаляем если были
+    if ($remove_table === true) {
         try {
-
             $s = $db->prepare('DROP TABLE IF EXISTS ' . $table_new . ' ');
             $s->execute();
-
-//        $s = $db->prepare('DROP TABLE IF EXISTS :table ');
-//        $s->execute([':table' => $table_new]);
-        } catch (\Exception $exc) {
-            //echo $exc->getTraceAsString();
-            \f\pa($exc);
-        } catch (\PDOException $exc) {
-            \f\pa($exc);
-        }
-//    }
-//
-//    if (1 == 1) {
-        // $sql_in = [':table' => $table_new];
-        $sql_in = [];
-        $sql_setup = 'CREATE TABLE `' . $table_new . '` ( `id` int(11) NOT NULL AUTO_INCREMENT ';
-
-        $n = 0;
-
-//        if( $module != '072.plus' )
-//            return[];
-        
-        foreach ( \Nyos\nyos::$menu[$module] as $k => $v) {
-//            \f\pa($k);
-//            \f\pa($v);
-            if( isset($v['type']) or isset($v['name_rus']) ){
-                $new[$k] = 1;
-            }
-        }
-
-        // \f\pa( [ $module , $table_new , $new ] );
-        
-        foreach ($new as $k => $v) {
-
-            if ($k == 'id' || $k == 'status' )
-                continue;
-            
-            if (isset(\Nyos\nyos::$menu[$module][$k]['type']) && \Nyos\nyos::$menu[$module][$k]['type'] == 'date' ) {
-                $sql_setup .= ' , `' . $k . '` date DEFAULT NULL ';
-            }elseif ( $k == 'jobman' || $k == 'sale_point' || $k == 'sort' ) {
-                $sql_setup .= ' , `' . $k . '` int(9) DEFAULT NULL ';
-            } else {
-                $sql_setup .= ' , `' . $k . '` varchar(150) DEFAULT NULL ';
-            }
-
-            $n++;
-        }
-
-        $sql_setup .= ' , `status` set(\'show\',\'hide\',\'delete\') NOT NULL DEFAULT \'show\' ,  UNIQUE (`id`)  ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
-
-        // \f\pa($sql_setup);
-
-        try {
-
-            $sql = $db->prepare($sql_setup);
-            $sql->execute($sql_in);
-
-            //$sql_in = [':table' => $table_new];
-            $sql_in = [];
-            // ALTER TABLE `mod_jobman_send_on_sp` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;
-//            $sql = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD UNIQUE KEY `id` (`id`); ');
-//            $sql->execute($sql_in);
-//            $sql1 = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT; ');
-//            $sql1->execute($sql_in);
-
-
-            foreach ($new as $k => $v) {
-                if ($k == 'jobman' 
-                        || $k == 'date'
-                        || $k == 'date_now'
-                        || $k == 'start'
-                        || $k == 'status'
-                        || $k == 'sale_point'
-                        ) {
-                    $sql = $db->prepare('ALTER TABLE  `' . $table_new . '` ADD INDEX(`'.$k.'`);');
-                    $sql->execute();
-                }
-            }
-            
         } catch (\Exception $exc) {
             //echo $exc->getTraceAsString();
             \f\pa($exc);
@@ -207,7 +109,91 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
         }
     }
 
-    \f\db\sql_insert_mnogo($db, $table_new, $d);
+    if (1 == 1) {
+
+        try {
+
+            // создание базы
+            if (1 == 1) {
+
+                $sql_in = [];
+                $sql_setup = 'CREATE TABLE `' . $table_new . '` ( `id` int(11) NOT NULL AUTO_INCREMENT ';
+
+                $n = 0;
+
+//        if( $module != '072.plus' )
+//            return[];
+
+                foreach (\Nyos\nyos::$menu[$module] as $k => $v) {
+//            \f\pa($k);
+//            \f\pa($v);
+                    if (isset($v['type']) or isset($v['name_rus'])) {
+                        $new[$k] = 1;
+                    }
+                }
+
+                // \f\pa( [ $module , $table_new , $new ] );
+
+
+
+                foreach ($new as $k => $v) {
+
+                    if ($k == 'id' || $k == 'status')
+                        continue;
+
+                    if (isset(\Nyos\nyos::$menu[$module][$k]['type']) && \Nyos\nyos::$menu[$module][$k]['type'] == 'date') {
+                        $sql_setup .= ' , `' . $k . '` date DEFAULT NULL ';
+                    } elseif ($k == 'jobman' || $k == 'sale_point' || $k == 'sort') {
+                        $sql_setup .= ' , `' . $k . '` int(9) DEFAULT NULL ';
+                    } else {
+                        $sql_setup .= ' , `' . $k . '` varchar(150) DEFAULT NULL ';
+                    }
+
+                    $n++;
+                }
+
+                $sql_setup .= ' , `status` set(\'show\',\'hide\',\'delete\') NOT NULL DEFAULT \'show\' ,  UNIQUE (`id`)  ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
+
+                // \f\pa($sql_setup);
+
+
+                $sql = $db->prepare($sql_setup);
+                $sql->execute($sql_in);
+
+                //$sql_in = [':table' => $table_new];
+                $sql_in = [];
+                // ALTER TABLE `mod_jobman_send_on_sp` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;
+//            $sql = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD UNIQUE KEY `id` (`id`); ');
+//            $sql->execute($sql_in);
+//            $sql1 = $db->prepare(' ALTER TABLE `' . $table_new . '` ADD CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT; ');
+//            $sql1->execute($sql_in);
+
+
+                foreach ($new as $k => $v) {
+                    if ($k == 'jobman' || $k == 'date' || $k == 'date_now' || $k == 'start' || $k == 'status' || $k == 'sale_point'
+                    ) {
+                        $sql = $db->prepare('ALTER TABLE  `' . $table_new . '` ADD INDEX(`' . $k . '`);');
+                        $sql->execute();
+                    }
+                }
+            }
+        }
+        //
+        catch (\Exception $exc) {
+            //echo $exc->getTraceAsString();
+            \f\pa($exc);
+        }
+        //
+        catch (\PDOException $exc) {
+            \f\pa($exc);
+        }
+    }
+
+    \f\pa([$module, sizeof($d ?? [] )], 2);
+
+    // \f\db\sql_insert_mnogo($db, $table_new, $d);
+    \Nyos\mod\items::$type_module = 3;
+    \Nyos\mod\items::adds($db, $module, $d);
 
     return \f\end3('ok', true);
 }
@@ -230,7 +216,7 @@ function db_creat_local_table($db, string $module, $table_new = null, $remove_ta
 function db2_insert($db, string $table, $var_array, $slash = false, $return = null, $skip_null = true) {
 
     $polya = \f\db\pole_list($db, $table);
-    //\f\pa($polya);
+    // \f\pa($polya);
     //\f\pa($var_array);
     // var_dump($polya);
 
@@ -254,6 +240,8 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
         if (strtolower($v) == 'null' || $v == '') {
             $all_val .= ' NULL';
             // $debug['sql_struktura'][$key] = $val;
+        } elseif ($v == 'NOW()' || $v == 'NOW') {
+            $all_val .= ' NOW() ';
 //        } elseif ($v == 'NOW()' || $v == 'NOW') {
 //            $all_val .= $_SERVER['REQUEST_TIME'];
         } else {
@@ -271,7 +259,8 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
 
     if (!isset($all_key{1}) || !isset($all_val{1})) {
 
-        throw new \NyosEx('Ошибка при добавлении записи в бд, неопознаны данные');
+        throw new \Exception('Ошибка при добавлении записи в бд, неопознаны данные');
+        // throw new \NyosEx('Ошибка при добавлении записи в бд, неопознаны данные');
     }
 
     try {
@@ -677,7 +666,7 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
     // \f\pa($keys);
 
     $polya = \f\db\pole_list($db, $table);
-    // \f\pa($form_polya);
+    // \f\pa($polya);
     // массив в запрос
     $in_var = [];
     $keys2 = array();
@@ -708,16 +697,70 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
         }
     }
 
-    $sql = $db->prepare('UPDATE `' . $table . '` '
-            . ' SET ' . $sql_set
-            . ( isset($where{0}) ? ' WHERE ' . $where : '' )
-            // . ( (isset($limit) && is_numeric($limit)) ? ' LIMIT ' . $limit : '' )
-            . ';');
+    try {
 
-    if ($sql->execute($in_var)) {
+        $sql = $db->prepare('UPDATE `' . $table . '` '
+                . ' SET ' . $sql_set
+                . ( isset($where{0}) ? ' WHERE ' . $where : '' )
+                // . ( (isset($limit) && is_numeric($limit)) ? ' LIMIT ' . $limit : '' )
+                . ';');
+
+//        \f\pa($sql);
+//        \f\pa($in_var);
+
+        $sql->execute($in_var);
+
         return TRUE;
-    } else {
+    } catch (\Exception $exc) {
+
+        // echo $exc->getTraceAsString();
+        \f\pa($exc);
         return FALSE;
+    }
+}
+
+/**
+ * удаление всей инфы модуля
+ * @param type $db
+ * @param type $module
+ * @return type
+ */
+function trancate_module($db, $module) {
+
+    try {
+
+        \f\db\trancate_table($db, 'mod_'.\f\translit( $module , 'uri2') );
+
+        return \f\end3('очищено');
+        
+    } catch (\Exception $exc) {
+
+        // echo $exc->getTraceAsString();
+        // \f\pa($exc);
+        return \f\end3('найдена ошибка', false, $exc);
+        
+    }
+}
+
+/**
+ * удаление всех данных из таблицы
+ * @param type $db
+ * @param type $table
+ * @return type
+ */
+function trancate_table($db, $table) {
+
+    try {
+
+        $sql = $db->prepare('TRUNCATE :table ;');
+        $sql->execute([':table' => $table]);
+
+        return \f\end3('очищено');
+    } catch (\Exception $exc) {
+
+        // echo $exc->getTraceAsString();
+        // \f\pa($exc);
+        return \f\end3('найдена ошибка', false, $exc);
     }
 }
 

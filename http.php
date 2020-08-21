@@ -24,3 +24,29 @@ function redirect($host = '/', $file = 'index.php', $request = null) {
     die();
     return;
 }
+
+/**
+ * получаем данные с https с помощью curl
+ * @param string $uri
+ * @return type
+ */
+function get_curl_https_uri(string $uri) {
+
+    if ($ch = curl_init()) { //инициализация сеанса
+        // 
+        // $postfields = array('field1' => 'value1', 'field2' => 'value2');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $uri );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        // curl_setopt($ch, CURLOPT_POST, 1);
+        // Edit: prior variable $postFields should be $postfields;
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // On dev server only!
+        $result = curl_exec($ch);
+        // \f\pa($result);
+        curl_close($ch);
+        return $result;
+    }
+    return \f\end3('что то не то ' . __FUNCTION__, false);
+}

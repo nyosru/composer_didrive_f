@@ -10,7 +10,18 @@ namespace f;
  * @return type
  */
 function end3($html, $stat = true, $dop_array = false) {
-    return end2($html, $stat, array('data' => $dop_array), 'array');
+    
+    $ee = end2($html, $stat, array('data' => $dop_array), 'array');
+      
+    if( strpos( $_SERVER['HTTP_HOST'], 'dev.' ) !== false ){
+        $e = debug_backtrace();
+        //echo '<pre>'; print_r($e); echo '</pre>';
+        $ee['debug']['debug_file'] = $e[0]['file'];
+        $ee['debug']['debug_line'] = $e[0]['line'];
+        $ee['debug']['debug_request'] = $_REQUEST;
+    }
+    
+    return $ee;
 }
 
 /**
@@ -29,7 +40,6 @@ function end2(string $html, $stat = true, $dop_array = false, $type2 = 'json') {
 
     $t['status'] = ( $stat == 'ok' || $stat === true ) ? 'ok' : 'error';
     $t['html'] = $html;
-
 
     if (strpos($_SERVER['HTTP_HOST'], 'dev.') !== false) {
         $e = debug_backtrace();
