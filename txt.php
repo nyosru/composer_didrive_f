@@ -331,7 +331,7 @@ function pa( $g, $type = null, $type2 = null, $name = null, $show_file_lie_otkud
         echo '<Br/>' . $e[0]['file'] . ' #' . $e[0]['line'];
     }
 
-    if (isset($name{1})) {
+    if (!empty($name)) {
         echo '<br/><b>' . $name . '</b>';
     }
 
@@ -386,39 +386,40 @@ function gsm($gsm, $type = FALSE) {
     //return $value;
 
     if ($type == 'all3452') {
-        if (isset($value{5}) && !isset($value{6})) {
+        // if ( !empty($value{5}) && !isset($value{6})) {
+        if ( strlen($value) == 5 ) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
             }
 
             return $value;
-        } elseif (isset($value{10}) && !isset($value{11}) &&
-                ( substr($value, 0, 5) == 83452 || substr($value, 0, 5) == 73452 )) {
+        // } elseif (isset($value{10}) && !isset($value{11}) && ( substr($value, 0, 5) == 83452 || substr($value, 0, 5) == 73452 )) {
+        } elseif ( strlen($value) == 10 && ( substr($value, 0, 5) == 83452 || substr($value, 0, 5) == 73452 )) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
             }
 
             return substr($value, 5, 6);
-        } elseif (isset($value{9}) && !isset($value{10}) &&
-                ( substr($value, 0, 4) == 3452 )) {
-
+        // } elseif (isset($value{9}) && !isset($value{10}) && ( substr($value, 0, 4) == 3452 )) {
+        } elseif ( strlen($value) == 9 && ( substr($value, 0, 4) == 3452 )) {
+            
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
             }
 
             return substr($value, 4, 6);
-        } elseif (isset($value{10}) && !isset($value{11}) &&
-                ( substr($value, 0, 2) == 89 || substr($value, 0, 2) == 79 )) {
+        // } elseif (isset($value{10}) && !isset($value{11}) && ( substr($value, 0, 2) == 89 || substr($value, 0, 2) == 79 )) {
+        } elseif ( strlen($value) == 10 && ( substr($value, 0, 2) == 89 || substr($value, 0, 2) == 79 )) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
             }
 
             return substr($value, 2, 9);
-        } elseif (isset($value{9}) && !isset($value{10}) &&
-                substr($value, 0, 1) == 9) {
+        // } elseif (isset($value{9}) && !isset($value{10}) && substr($value, 0, 1) == 9) {
+        } elseif ( strlen($value) == 9 && substr($value, 0, 1) == 9) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
@@ -428,9 +429,8 @@ function gsm($gsm, $type = FALSE) {
         }
     } elseif ($type === FALSE) {
 
-        if (isset($value{10}) && !isset($value{11}) &&
-                // ( substr($value,0,2) == 89 || substr($value,0,2) == 79 ) )
-                ( substr($value, 0, 1) == 8 || substr($value, 0, 1) == 7 )
+        // if (isset($value{10}) && !isset($value{11}) && ( substr($value, 0, 1) == 8 || substr($value, 0, 1) == 7 )
+        if ( strlen($value) == 10 && ( substr($value, 0, 1) == 8 || substr($value, 0, 1) == 7 )
         ) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
@@ -440,8 +440,8 @@ function gsm($gsm, $type = FALSE) {
             return substr($value, 1, 10);
         }
 
-        if (isset($value{9}) && !isset($value{10}) &&
-                substr($value, 0, 1) == 9) {
+        // if (isset($value{9}) && !isset($value{10}) && substr($value, 0, 1) == 9) {
+        if ( strlen($value) == 9 && substr($value, 0, 1) == 9) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
@@ -482,26 +482,28 @@ function gsm_rus($gsm3, $type = false) {
     if (is_numeric($gsm2)) {
         //echo '+ ==='.$gsm.'=';
 
-        if (isset($gsm2{8}) && !isset($gsm2{9}) && is_numeric($gsm2)) {
+        // if (isset($gsm2{8}) && !isset($gsm2{9}) && is_numeric($gsm2)) {
+        if ( strlen($gsm2) == 8 && is_numeric($gsm2)) {
             // echo __LINE__.'<br/>';
             $gsm = $gsm2;
-        } elseif (isset($gsm2{9}) && !isset($gsm2{10}) &&
-                ( substr($gsm2, 0, 2) == '89' || substr($gsm2, 0, 2) == '79' )) {
+        // } elseif (isset($gsm2{9}) && !isset($gsm2{10}) && ( substr($gsm2, 0, 2) == '89' || substr($gsm2, 0, 2) == '79' )) {
+        } elseif ( strlen($gsm2) == 9 && ( substr($gsm2, 0, 2) == '89' || substr($gsm2, 0, 2) == '79' )) {
             // echo __LINE__.'<br/>';
             $gsm = substr($gsm2, 2, 9);
-        } elseif (isset($gsm2{9}) && !isset($gsm2{10}) && ( substr($gsm2, 0, 1) == 9 || substr($gsm2, 0, 2) == 89 || substr($gsm2, 0, 2) == 79
-                )
-        ) {
+        // } elseif (isset($gsm2{9}) && !isset($gsm2{10}) && ( substr($gsm2, 0, 1) == 9 || substr($gsm2, 0, 2) == 89 || substr($gsm2, 0, 2) == 79 ) ) {
+        } elseif ( strlen($gsm2) == 9 && ( substr($gsm2, 0, 1) == 9 || substr($gsm2, 0, 2) == 89 || substr($gsm2, 0, 2) == 79 ) ) {
             // echo __LINE__.'<br/>';
             return '8(' . substr($gsm2, 0, 3) . ')' . substr($gsm2, 3, 3) . '-' . substr($gsm2, 6, 2) . '-' . substr($gsm2, 8, 2);
-        } elseif (isset($gsm2{9}) && !isset($gsm2{10})) {
+        // } elseif (isset($gsm2{9}) && !isset($gsm2{10})) {
+        } elseif ( strlen($gsm2) == 9 ) {
             // echo __LINE__.'<br/>';
             return '8(' . substr($gsm2, 0, 4) . ')' . substr($gsm2, 4, 2) . '-' . substr($gsm2, 6, 2) . '-' . substr($gsm2, 8, 2);
-        } elseif (isset($gsm2{9}) && !isset($gsm2{10}) &&
-                substr($gsm2, 0, 1) == 9) {
+        // } elseif (isset($gsm2{9}) && !isset($gsm2{10}) &&
+        } elseif ( strlen($gsm2) == 9 && substr($gsm2, 0, 1) == 9) {
             // echo __LINE__.'<br/>';
             $gsm = substr($gsm2, 1, 10);
-        } elseif (isset($gsm2{5}) && !isset($gsm2{6})) {
+        // } elseif (isset($gsm2{5}) && !isset($gsm2{6})) {
+        } elseif (strlen($gsm2) == 5 ) {
             // echo __LINE__.'<br/>';
             // $gsm = substr($gsm2,0,10);
             if ($type == 7) {
@@ -538,14 +540,14 @@ function gsm_rus($gsm3, $type = false) {
                 $status .= '</fieldset>';
             }
 
-            return ( isset($gsm{4}) ) ? '79' . substr($gsm, 0, 2) . substr($gsm, 2, 3) . substr($gsm, 5, 2) . substr($gsm, 7, 2) : false;
+            return ( !empty($gsm) ) ? '79' . substr($gsm, 0, 2) . substr($gsm, 2, 3) . substr($gsm, 5, 2) . substr($gsm, 7, 2) : false;
         } else {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
                 $status .= '</fieldset>';
             }
 
-            return ( isset($gsm{4}) ) ? '8(9' . substr($gsm, 0, 2) . ')' . substr($gsm, 2, 3) . '-' . substr($gsm, 5, 2) . '-' . substr($gsm, 7, 2) : false;
+            return ( !empty($gsm) ) ? '8(9' . substr($gsm, 0, 2) . ')' . substr($gsm, 2, 3) . '-' . substr($gsm, 5, 2) . '-' . substr($gsm, 7, 2) : false;
         }
     }
 
@@ -683,6 +685,23 @@ function translit($cyr_str, $type = false) {
         }
 
         return ceil(str_replace(",", ".", $e));
+    } elseif ($type == 'uri3' ) {
+        $tr = array(' ' => '', "Ґ" => "G", "Ё" => "YO", "Є" => "E", "Ї" => "YI", "І" => "I", "і" => "i", "ґ" => "g", "ё" => "yo", "№" => "", "є" => "e",
+            "ї" => "yi", "А" => "A", "Б" => "B", "В" => "V", "Г" => "G", "Д" => "D", "Е" => "E", "Ж" => "ZH", "З" => "Z", "И" => "I",
+            "Й" => "Y", "К" => "K", "Л" => "L", "М" => "M", "Н" => "N", "О" => "O", "П" => "P", "Р" => "R", "С" => "S", "Т" => "T",
+            "У" => "U", "Ф" => "F", "Х" => "H", "Ц" => "TS", "Ч" => "CH", "Ш" => "SH", "Щ" => "SCH", "Ъ" => "'", "Ы" => "YI", "Ь" => "",
+            "Э" => "E", "Ю" => "YU", "Я" => "YA", "а" => "a", "б" => "b", "в" => "v", "г" => "g", "д" => "d", "е" => "e", "ж" => "zh",
+            "з" => "z", "и" => "i", "й" => "y", "к" => "k", "л" => "l", "м" => "m", "н" => "n", "о" => "o", "п" => "p", "р" => "r",
+            "с" => "s", "т" => "t", "у" => "u", "ф" => "f", "х" => "h", "ц" => "ts", "ч" => "ch", "ш" => "sh", "щ" => "sch", "ъ" => "",
+            "ы" => "yi", "ь" => "", "э" => "e", "ю" => "yu", "я" => "ya");
+
+        $c = strtolower( preg_replace('/[^a-zA-Z0-9_]/', '', strtr($cyr_str, $tr) ) );
+
+        if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
+            $status .= '</fieldset>';
+        }
+
+        return $c;
     } else {
         $tr = array(' ' => '_', "Ґ" => "G", "Ё" => "YO", "Є" => "E", "Ї" => "YI", "І" => "I", "і" => "i", "ґ" => "g", "ё" => "yo", "№" => "#", "є" => "e",
             "ї" => "yi", "А" => "A", "Б" => "B", "В" => "V", "Г" => "G", "Д" => "D", "Е" => "E", "Ж" => "ZH", "З" => "Z", "И" => "I",
@@ -717,15 +736,11 @@ function getTimer($date, $time = null) {
     } elseif ($date == date('Y-m-d', $_SERVER['REQUEST_TIME'] - 24 * 3600 * 2)) {
         $r = 'позавчера';
     } else {
-
-        $r = ceil(substr($date, 8, 2)) . ' ' . f\date_in_text(ceil(substr($date, 5, 2)), 'месяца');
+        $r = ceil( substr($date, 8, 2) ) . ' ' . f\date_in_text(ceil(substr($date, 5, 2)), 'месяца');
     }
 
-    if (isset($time{5})) {
-
+    if (!empty($time))
         $r .= ' в ' . substr($time, 0, 5);
-    }
-
 
     if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
         $status .= '</fieldset>';
