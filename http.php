@@ -25,7 +25,7 @@ function redirect($host = '/', $file = 'index.php', $request = null) {
     return;
 }
 
-/**
+/** 
  * получаем данные с https с помощью curl
  * @param string $uri
  * @return type

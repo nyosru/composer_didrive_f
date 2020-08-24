@@ -752,10 +752,11 @@ function trancate_table($db, $table) {
 
     try {
 
-        $sql = $db->prepare('TRUNCATE :table ;');
-        $sql->execute([':table' => $table]);
+        $sql = $db->prepare('TRUNCATE `'.$table.'` ;');
+        $sql->execute();
 
         return \f\end3('очищено');
+        
     } catch (\Exception $exc) {
 
         // echo $exc->getTraceAsString();
