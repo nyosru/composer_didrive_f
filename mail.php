@@ -424,7 +424,7 @@ class mailpost {
         }
 
         //
-        elseif (isset($filename{2}) && file_exists($filename)) {
+        elseif ( !empty($filename) && file_exists($filename)) {
 
             $f = fopen($filename, "rb");
 
@@ -465,7 +465,7 @@ class mailpost {
 
         //require_once ($_SERVER['DOCUMENT_ROOT'] . '/include/f/mail.php');
         // шлём через сенд пульс
-        if (isset(self::$sendpulse_id{5}) && isset(self::$sendpulse_key{5})) {
+        if ( !empty(self::$sendpulse_id) && !empty(self::$sendpulse_key) ) {
 
             if (isset($_SESSION['status1']) && $_SESSION['status1'] === true)
                 $status .= 'Есть коды для сенд пульс, шлём тут<br/>';
@@ -473,7 +473,7 @@ class mailpost {
             $dop['kolvo_send_hour'] = self::colvoMailSendpulse($db, $dop['folder']);
 
             // $dop['limit_sendpulse_on_day'] = round(trim($dop['limit_sendpulse_on_day']));
-            $dop['limit_sendpulse_on_day'] = ( ( isset($dop['limit_sendpulse_on_day']{0}) && is_numeric($dop['limit_sendpulse_on_day']) ) ? $dop['limit_sendpulse_on_day'] : 11 );
+            $dop['limit_sendpulse_on_day'] = ( ( !empty($dop['limit_sendpulse_on_day']) && is_numeric($dop['limit_sendpulse_on_day']) ) ? $dop['limit_sendpulse_on_day'] : 11 );
 
             if ($dop['kolvo_send_hour'] <= $dop['limit_sendpulse_on_day']) {
                 // $dop['sendsend'] = 123 . ' ' . $dop['kolvo_send_hour'] .' <= '. $dop['limit_sendpulse_on_day'];
@@ -519,7 +519,7 @@ class mailpost {
                 self::$body = f\compileSmarty($tpl . '.htm', $dop, $_SERVER['DOCUMENT_ROOT'] . DS . 'template-mail');
             }
             //
-            elseif ($tpl === null && isset(self::$body{50})) {
+            elseif ($tpl === null && !empty(self::$body)) {
 
                 $dop['stat_mail_send'] = __LINE__;
             }
@@ -530,7 +530,7 @@ class mailpost {
             }
 
             // echo '<hr><hr>'.'<hr>'.'<hr>'.$rr.'<hr>'.'<hr>'.'<hr>'.'<hr>';
-            self::ns_send($head, self::$body, ( isset($dop['from_domain']{2}) ? $dop['from_domain'] : $_SERVER['HTTP_HOST']));
+            self::ns_send( $head, self::$body, $dop['from_domain'] ?? $_SERVER['HTTP_HOST'] );
 
             $dop['file'] = __FILE__;
             $dop['line'] = __LINE__;
@@ -672,7 +672,7 @@ class mailpost {
 
             require_once( $_SERVER['DOCUMENT_ROOT'] . '/0.all/f/smarty.php' );
             self::$body = f\compileSmarty($tpl, $vars, $_SERVER['DOCUMENT_ROOT'] . DS . 'template-mail');
-        } elseif ($tpl === null && isset(self::$body{50})) {
+        } elseif ($tpl === null && !empty(self::$body)) {
             
         } else {
             self::$body = f\getTemplateMail($tpl, $vars);
@@ -683,7 +683,7 @@ class mailpost {
             'html' => self::$body,
             'subject' => $head
         );
-        $email['text'] = isset($vars['text']{2}) ? $vars['text'] : strip_tags($email['html']);
+        $email['text'] = $vars['text'] ?? strip_tags($email['html']);
 
 
         //,
@@ -704,7 +704,7 @@ class mailpost {
 
 
 
-        if (isset($from['email']{1})) {
+        if ( !empty($from['email']) ) {
             $email['from'] = array(
                 'name' => $from['name'],
                 'email' => $from['email']

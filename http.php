@@ -17,15 +17,15 @@ namespace f;
  */
 function redirect($host = '/', $file = 'index.php', $request = null) {
     header('Location: '
-            . ( isset($host{0}) ? $host : '' )
-            . ( isset($file{0}) ? $file : '' )
-            . ( ( isset($request) && sizeof($request) > 0 ) ? '?' . http_build_query($request) : '' )
+            . ( !empty($host) ? $host : '' )
+            . ( !empty($file) ? $file : '' )
+            . ( ( !empty($request) && sizeof($request) > 0 ) ? '?' . http_build_query($request) : '' )
     );
     die();
     return;
 }
 
-/** 
+/**
  * получаем данные с https с помощью curl
  * @param string $uri
  * @return type

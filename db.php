@@ -43,7 +43,7 @@ function getSql($db, $sql, $key = 'id') {
             $res[$r['id']] = $r['value'];
         } elseif ($key == 3 && isset($r['value'])) {
             $res = $r['value'];
-        } elseif (isset($key{1}) && isset($r[$key])) {
+        } elseif (!empty($key) && isset($r[$key])) {
             $res[$r[$key]] = $r;
         } else {
             $res[] = $r;
@@ -233,8 +233,7 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
         if ($skip_null === true && ( strtolower($v) == 'null' || $v == '' ))
             continue;
 
-        $all_val .= isset($all_val{1}) ? ',' : '';
-        $all_key .= isset($all_key{1}) ? ',' : '';
+        $all_val .= !empty($all_val) ? ',' : '';
 
         //if( strlen($val)<0 || $val == '')
         if (strtolower($v) == 'null' || $v == '') {
@@ -247,8 +246,12 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
         } else {
             $all_val .= ( $slash === false ) ? '\'' . $var_array[$key] . '\'' : '\'' . addslashes($var_array[$key]) . '\'';
         }
-
-        $all_key .= ' `' . $key . '`';
+ 
+        if (\Nyos\Nyos::$db_type == 'pg') {
+            $all_key .= (!empty($all_key) ? ',' : '' ) . ' ' . $key . ' ';
+        } else {
+            $all_key .= ' `' . $key . '`';
+        }
     }
 
 //    echo '<br/>';
@@ -257,7 +260,7 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
 //    echo '<br/>';
 //    echo '<br/>';
 
-    if (!isset($all_key{1}) || !isset($all_val{1})) {
+    if (empty($all_key) || empty($all_val)) {
 
         throw new \Exception('Ошибка при добавлении записи в бд, неопознаны данные');
         // throw new \NyosEx('Ошибка при добавлении записи в бд, неопознаны данные');
@@ -265,7 +268,11 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
 
     try {
 
-        $s = 'INSERT INTO `' . $table . '` ( ' . $all_key . ' ) VALUES ( ' . $all_val . ' );';
+        if (\Nyos\nyos::$db_type == 'pg') {
+            $s = 'INSERT INTO "' . $table . '" ( ' . $all_key . ' ) VALUES ( ' . $all_val . ' );';
+        } else {
+            $s = 'INSERT INTO `' . $table . '` ( ' . $all_key . ' ) VALUES ( ' . $all_val . ' );';
+        }
 //        echo '<Br/><Br/>'
 //        . $s
 //        . '<Br/><Br/>';
@@ -315,7 +322,19 @@ function pole_list($db, string $table) {
 
     // echo '<br/>tt '.__LINE__.' - ' . $table;
 
-    if (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
+    if (\Nyos\Nyos::$db_type == 'pg') {
+
+
+        $s = $db->prepare(' select column_name from information_schema.columns where information_schema.columns.table_name= :table ;');
+        $s->execute([':table' => $table]);
+        $cash_db['pole_list'][$table] = [];
+        while ($r = $s->fetch()) {
+            // \f\pa($r);
+            $cash_db['pole_list'][$table][$r['column_name']] = 1;
+        }
+        // \f\pa($_pole_list[$table]);
+        return $cash_db['pole_list'][$table];
+    } elseif (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
 
         // echo '<Br/>' . __LINE__;
 
@@ -425,7 +444,7 @@ function sql_insert_mnogo($db, string $table, $rows, $key = array(), bool $slash
             foreach ($list_polya as $k1) {
                 // $var_mask = ':' . $k1 . '_' . $nn;
                 $var_mask = ':v' . $nn . '_' . $nn0;
-                $str_v2 .= ( isset($str_v2{1}) ? ',' : '' ) . ' ' . $var_mask . ' ';
+                $str_v2 .= (!empty($str_v2) ? ',' : '' ) . ' ' . $var_mask . ' ';
                 $indb[$var_mask] = $key[$k1] ?? $v[$k1] ?? NULL;
                 $nn0++;
             }
@@ -595,7 +614,7 @@ function SqlInMn($start, $data) {
                 $text .= ', ';
 
             //if( strlen( $data[$w] ) > 5 )
-            if (isset($data[$w]{5})) {
+            if (!empty($data[$w])) {
                 $text .= $data[$w];
                 $ssa++;
             }
@@ -692,7 +711,7 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
             if (isset($keys2[$key]))
                 continue;
 
-            $sql_set .= ' ' . ( isset($sql_set{1}) ? ', ' : '' ) . '`' . $key . '` = :val_' . $key;
+            $sql_set .= ' ' . (!empty($sql_set) ? ', ' : '' ) . '`' . $key . '` = :val_' . $key;
             $in_var[':val_' . $key] = $val;
         }
     }
@@ -701,7 +720,7 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
 
         $sql = $db->prepare('UPDATE `' . $table . '` '
                 . ' SET ' . $sql_set
-                . ( isset($where{0}) ? ' WHERE ' . $where : '' )
+                . (!empty($where) ? ' WHERE ' . $where : '' )
                 // . ( (isset($limit) && is_numeric($limit)) ? ' LIMIT ' . $limit : '' )
                 . ';');
 
@@ -729,16 +748,14 @@ function trancate_module($db, $module) {
 
     try {
 
-        \f\db\trancate_table($db, 'mod_'.\f\translit( $module , 'uri2') );
+        \f\db\trancate_table($db, 'mod_' . \f\translit($module, 'uri2'));
 
         return \f\end3('очищено');
-        
     } catch (\Exception $exc) {
 
         // echo $exc->getTraceAsString();
         // \f\pa($exc);
         return \f\end3('найдена ошибка', false, $exc);
-        
     }
 }
 
@@ -749,14 +766,10 @@ function trancate_module($db, $module) {
  * @return type
  */
 function trancate_table($db, $table) {
-
     try {
-
-        $sql = $db->prepare('TRUNCATE `'.$table.'` ;');
-        $sql->execute();
-
+        $sql = $db->prepare('TRUNCATE :table ;');
+        $sql->execute([':table' => $table]);
         return \f\end3('очищено');
-        
     } catch (\Exception $exc) {
 
         // echo $exc->getTraceAsString();
@@ -1054,7 +1067,7 @@ function SqlMaxInsert($start, $data) {
             if ($ssa > 0)
                 $text .= ', ';
 
-            if (isset($data[$w] {4})) {
+            if (!empty($data[$w])) {
                 $text .= $data[$w];
                 $ssa++;
             }

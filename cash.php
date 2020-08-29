@@ -7,17 +7,28 @@ namespace f;
 
 class Cash {
 
+    public static $cancel_memcash = false;
     public static $cache = false;
     public static $run = false;
     public static $version = null;
 
     public static function start() {
 
+        if (self::$cancel_memcash === true)
+            return;
+
         if (self::$run !== true) {
-            self::$cache = new \Memcache;
-            self::$cache->connect('127.0.0.1', 11211) or die("Could not connect");
-            self::$run = true;
-            self::$version = self::$cache->getVersion();
+
+            try {
+
+                self::$cache = new \Memcache;
+                self::$cache->connect('127.0.0.1', 11211) or die("Could not connect");
+                self::$run = true;
+                self::$version = self::$cache->getVersion();
+            } catch (\Exception $exc) {
+                //echo $exc->getTraceAsString();
+                \f\pa($exc);
+            }
 //            \f\pa(self::$version);
 //            1.5.15 - локалка
 //            1.5.20 - сервер
@@ -25,6 +36,10 @@ class Cash {
     }
 
     public static function close() {
+
+        if (self::$cancel_memcash === true)
+            return;
+
         // echo '<br/>'.__FILE__.' '.__LINE__;
         if (self::$run === true) {
             self::close();
@@ -33,6 +48,9 @@ class Cash {
     }
 
     public static function clearCasheFromVars(array $vars) {
+
+        if (self::$cancel_memcash === true)
+            return;
 
         // \f\pa($vars, '', '', 'start clearCasheFromVars');
 
@@ -65,6 +83,10 @@ class Cash {
      */
     public static function deleteKeyPoFilterMnogo(array $filtr) {
 
+        if (self::$cancel_memcash === true)
+            return;
+
+
         if (empty($filtr))
             return \f\end3('пустой входящий массив', false);
 
@@ -80,6 +102,9 @@ class Cash {
      * @param array $filtr
      */
     public static function deleteKeyPoFilter(array $filtr) {
+
+        if (self::$cancel_memcash === true)
+            return;
 
         // \f\pa($filtr, '', '', 'filtr');
 
@@ -162,6 +187,10 @@ class Cash {
      * @return type
      */
     public static function getVar(string $var) {
+        
+        if (self::$cancel_memcash === true)
+            return false;
+        
         self::start();
         $vars = self::$cache->get($var);
         return $vars ?? false;
@@ -171,6 +200,10 @@ class Cash {
      * трём все ключи
      */
     public static function allClear() {
+        
+        if (self::$cancel_memcash === true)
+            return;
+        
         self::start();
         self::$cache->flush();
     }
@@ -182,6 +215,9 @@ class Cash {
      */
     public static function setVar(string $var, $data, $time = 0) {
 
+        if (self::$cancel_memcash === true)
+            return false;
+        
         if ($var == 'keys') {
 
             $e = self::$cache->set('keys', $data, false, 0);

@@ -117,7 +117,7 @@ class File {
         foreach ($files as $k => $filename) {
 
             // если это не сама папка и не её родитель
-            if (!isset($filename{2}))
+            if ( empty($filename) || $filename == '.' || $filename == '..' )
                 continue;
 
             $name = $dir . DS . $filename;
@@ -265,7 +265,7 @@ class File {
             foreach ($files as $k => $filename) {
 
                 // если это не сама папка и не её родитель
-                if (!isset($filename{2}))
+                if ( empty($filename) || $filename == '.' || $filename == '..' )
                     continue;
 
                 $name = $dir . DS . $filename;
@@ -318,7 +318,7 @@ function dir_size($dir) {
     foreach ($files as $k => $filename) {
 
         // если это не сама папка и не её родитель
-        if (!isset($filename{2}))
+        if ( empty($filename) || $filename == '.' || $filename == '..' )
             continue;
 
         $name = $dir . DS . $filename;
@@ -506,7 +506,7 @@ function listFileInDir($dir, $vers = 1) {
         foreach ($files as $k => $filename) {
 
             // если это не сама папка и не её родитель
-            if (!isset($filename{2}))
+            if ( empty($filename) || $filename == '.' || $filename == '..' )
                 continue;
 
             $name = $dir . DS . $filename;
@@ -882,7 +882,7 @@ function convertFileToSerialArray($file, $result_file, $type = '1c-win1251', $st
 
                 $stroka = iconv('windows-1251', 'UTF-8', $stroka);
 
-                if (!isset($stroka{0}))
+                if ( empty($stroka))
                     break;
 
                 if ($r === true) {
@@ -893,16 +893,12 @@ function convertFileToSerialArray($file, $result_file, $type = '1c-win1251', $st
                         $t = explode(';', $stroka);
 
                         foreach ($t as $k => $v) {
-                            if (isset($v{1})) {
+                            if ( !empty($v) ) {
 
                                 $v1 = \f\translit(trim($v));
                                 $t_head[$k] = $v1;
                                 $head2[$v1] = $v;
 
-//                                if( $add_trans_var === true ){
-//                                $head2[$v1.'__t'] = $v;
-//                                $t_head[$k.'__t'] = $v1.'__t';
-//                                }
                             }
                         }
                     }
@@ -914,14 +910,7 @@ function convertFileToSerialArray($file, $result_file, $type = '1c-win1251', $st
                         $s2 = $s1 = array();
 
                         foreach ($s as $k => $v) {
-
-                            if (isset($t_head[$k]{1})) {
-                                //$s1[mb_strtolower(isset($t_head[$k]) ? $t_head[$k] : $k)] = trim($v);
-                                // echo '<Br/>'.$t_head[$k];
-//                                if( isset($t_head[$k]) && substr($t_head[$k],0,1) !== 'j' ){
-//                                    echo '<Br/>'.__LINE__;
-//                                }
-                                // если заголовок
+                            if ( !empty($t_head[$k]) ) {
                                 if (isset($t_head[$k]) && substr($t_head[$k], 0, 1) == 'j') {
                                     $s1[mb_strtolower(isset($t_head[$k]) ? $t_head[$k] : $k)] = trim($v);
                                     $s1[mb_strtolower($t_head[$k]) . '_translit'] = \f\translit(trim($v), 'uri2');
@@ -937,6 +926,7 @@ function convertFileToSerialArray($file, $result_file, $type = '1c-win1251', $st
                     }
                 }
 
+                
 // если ещё не было запусков заголовков
                 elseif ($r !== true && substr($stroka, 0, 4) == '@@@=') {
                     //echo '<br/>#' . __LINE__ . ' после этой строчки старт данных';
@@ -1029,7 +1019,7 @@ function convert1сFileToSerialArray($file, $result_file) {
 
             $stroka = iconv('windows-1251', 'UTF-8', $stroka);
 
-            if (!isset($stroka{2}))
+            if ( empty($stroka) )
                 break;
 
             // echo '<br/>#' . __LINE__ . ' // ' . $stroka;
@@ -1046,7 +1036,7 @@ function convert1сFileToSerialArray($file, $result_file) {
                     $t = explode(';', $stroka);
 
                     foreach ($t as $k => $v) {
-                        if (isset($v{1})) {
+                        if ( !empty($v) ) {
                             $v1 = \f\translit(trim($v));
                             $t_head[$k] = $v1;
                         }
@@ -1056,63 +1046,35 @@ function convert1сFileToSerialArray($file, $result_file) {
 //
                 else {
 
-                    // echo '<br/>#' . __LINE__ . ' обработка строчки данных';
-
                     $s = explode(';', trim($stroka));
-// f\pa($s);
                     $s2 = $s1 = array();
 
                     foreach ($s as $k => $v) {
 
-                        if (isset($t_head[$k]{1})) {
-
-// if( $k == 'price' || $k == 'price1' || $k == 'price2' )
-// $v = round($v,2);
+                        if ( !empty($t_head[$k]) ) {
 
                             $s1[( isset($t_head[$k]) ? $t_head[$k] : $k )] = $v;
                         }
                     }
-// f\pa($s1);
-// $s1['id_item'] = $nn;
+
                     $t_all[] = $s1;
 
-//$t_all[] = self::putKeyArray($t_head, explode(';', $stroka));
                 }
 
-// // echo __LINE__.'<br/>';
-// echo iconv('windows-1251', 'UTF-8', $buffer) . '<br/>';
             }
 // если ещё не было запусков заголовков
             elseif ($r !== true && substr($stroka, 0, 4) == '@@@=') {
-
-                // echo '<br/>#' . __LINE__ . ' после этой строчки старт данных';
-
                 $r = true;
             }
         }
     }
-
-// f\pa( $t_all );
-// f\pa( $t_all_dop );
 
     if (!feof($handle)) {
         echo "Ошибка чтения файла\n";
     }
 
     fclose($handle);
-
-//    echo '<br/>';
-//    echo '<br/>#' . __LINE__;
-//    echo '<br/>';
-// \f\pa($t_all, 2, null, 't_all');
-//    \f\pa($t_head);
-//    \f\pa($t_all);
-
-
-
     file_put_contents($result_file, serialize($t_all));
-//\f\pa($t_all, 2, null, 'file_put_contents($result_file, serialize($t_all));');
-
     rename($file, $file . '.delete');
 
     if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
@@ -1127,12 +1089,6 @@ function convert1сFileToSerialArray($file, $result_file) {
 
 function scanFileAndConvertToSerialArray($file, $result_file) {
 
-//    echo '<br/>#' . __LINE__ . ' f ' . $file;
-//    echo '<br/>#' . __LINE__ . ' rf ' . $result_file;
-//    echo '<br/>#' . __LINE__ . ' t ' . $type;
-//    echo '<br/>';
-// $show_status = true;
-
     if (isset($show_status) && $show_status === true) {
         $status = '';
         $_SESSION['status1'] = true;
@@ -1144,8 +1100,6 @@ function scanFileAndConvertToSerialArray($file, $result_file) {
         $status .= '<fieldset class="status" ><legend>' . __CLASS__ . ' #' . __LINE__ . ' + ' . __FUNCTION__ . '</legend>';
     }
 
-
-
     $handle = @fopen($file, "r");
 
     while (( $stroka = fgets($handle, 4096)) !== false) {
@@ -1153,9 +1107,6 @@ function scanFileAndConvertToSerialArray($file, $result_file) {
             echo 'Есть дата строчка';
         }
     }
-
-
-
 
     if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
         $status .= '<span class="bot_line">#' . __LINE__ . '</span></fieldset>';
