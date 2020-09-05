@@ -246,12 +246,13 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
         } else {
             $all_val .= ( $slash === false ) ? '\'' . $var_array[$key] . '\'' : '\'' . addslashes($var_array[$key]) . '\'';
         }
- 
+
         if (\Nyos\Nyos::$db_type == 'pg') {
             $all_key .= (!empty($all_key) ? ',' : '' ) . ' ' . $key . ' ';
         } else {
-            $all_key .= ' `' . $key . '`';
+            $all_key .= (!empty($all_key) ? ',' : '' ).' `' . $key . '`';
         }
+
     }
 
 //    echo '<br/>';
@@ -264,6 +265,7 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
 
         throw new \Exception('Ошибка при добавлении записи в бд, неопознаны данные');
         // throw new \NyosEx('Ошибка при добавлении записи в бд, неопознаны данные');
+
     }
 
     try {
