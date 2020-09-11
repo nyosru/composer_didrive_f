@@ -12,7 +12,7 @@
 
 
 $function = new Twig_SimpleFunction('f__md5', function ( string $str ) {
-    return md5($str );
+    return md5($str);
 });
 $twig->addFunction($function);
 
@@ -40,7 +40,7 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('didrive_f__timer_stop', function ( $timer_id = '' ) {
     //return \f\timer::stop('str', $timer_id);
-    return \f\timer_stop( $timer_id );
+    return \f\timer_stop($timer_id);
 });
 $twig->addFunction($function);
 
@@ -81,3 +81,6 @@ $function = new Twig_SimpleFunction('f__http_build_query', function ( array $ar 
     return http_build_query($ar);
 });
 $twig->addFunction($function);
+
+
+require_once 'txt.twig.function.php';

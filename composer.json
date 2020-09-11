@@ -1,7 +1,7 @@
 {
     "name": "didrive/f",
     "description": "simple nyos function for sites",
-    "version": "2.6.5",
+    "version": "2.6.7",
     
     "keywords": [
         "nyos", "uralweb.info"
@@ -12,8 +12,8 @@
     "authors": [
         {
             "name": "Сергей Бакланов",
-            "email": "1@nyos.ru",
-            "homepage": "https://uralweb.info",
+            "email": "1@php-cat.com",
+            "homepage": "https://php-cat.com",
             "role": "Developer"
         }
     ],

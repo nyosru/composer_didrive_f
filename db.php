@@ -289,7 +289,7 @@ function db2_insert($db, string $table, $var_array, $slash = false, $return = nu
         }
     } catch (\PDOException $ex) {
 
-        throw new \Exception('Ошибка при добавлении записи в бд ' . $ex->getMessage());
+        throw new \Exception('('.$s.') Ошибка при добавлении записи в бд ' . $ex->getMessage());
     }
 }
 
