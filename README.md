@@ -6,6 +6,24 @@ composer require didrive/f
 
 ======= Пример ========
 
+------- вносим изменение при изменении select ---------
+
+<select 
+    class='form-control base__select__send_data_ajax' 
+    ajax_go="/vendor/didrive/f/micro-service/db-edit.php"
+    table="gm_user"
+    pole="access"
+    item_id='{{ k }}'
+    >
+    <option 
+        value='admin'
+        s='{{ creatSecret( 'gm_user-access-' ~ k ~ '-admin' ) }}' 
+        {% if access1 == 'admin' %} selected="selected" {% endif %} 
+        >
+        Полный доступ ( администратор )
+    </option>
+</select>
+
 --- сортировка массивов -----
 
 usort($a, "\\f\\sort_ar_date_desc");
