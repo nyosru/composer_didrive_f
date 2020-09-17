@@ -336,6 +336,7 @@ function pole_list($db, string $table) {
         }
         // \f\pa($_pole_list[$table]);
         return $cash_db['pole_list'][$table];
+        
     } elseif (isset($db_cfg['type']) && $db_cfg['type'] == 'mysql') {
 
         // echo '<Br/>' . __LINE__;
@@ -688,6 +689,7 @@ function db_edit2($db, string $table, $keys, array $data, $replace_keys = false,
 
     $polya = \f\db\pole_list($db, $table);
     // \f\pa($polya);
+    
     // массив в запрос
     $in_var = [];
     $keys2 = array();

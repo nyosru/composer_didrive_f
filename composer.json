@@ -1,7 +1,7 @@
 {
     "name": "didrive/f",
     "description": "simple nyos function for sites",
-    "version": "2.7.0",
+    "version": "2.7.1",
     
     "keywords": [
         "nyos", "uralweb.info"
