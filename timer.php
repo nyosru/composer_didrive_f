@@ -10,6 +10,13 @@ function timer_start($id = 0) {
     \f\timer::start($id);
 }
 
+/**
+ * 
+ * @param type $id
+ * @param type $out
+ * @return type
+ * на выходе сек - секунд, memory - память Кб
+ */
 function timer_stop($id = 0, $out = 'str') {
     
     $timer = \f\timer::stop( $out, $id);
