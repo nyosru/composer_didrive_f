@@ -1,7 +1,7 @@
 {
     "name": "didrive/f",
     "description": "simple nyos function for sites",
-    "version": "2.9.0",
+    "version": "2.10.0",
     
     "keywords": [
         "nyos", "uralweb.info"
@@ -25,6 +25,7 @@
     "autoload": {
         "files": [ 
             "ajax.php",
+            "date.php",
             "cash.php",
             "db.php",
             "file.php",
