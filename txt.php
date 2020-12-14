@@ -1066,6 +1066,17 @@ function f_csv($str, $separator = ';', $quote = '"') {
 }
 
 /**
+ * возвращает название таблицы в бд
+ * @param type $mod
+ * @return type
+ */
+function db_table($mod) {
+
+    return 'mod_'.\f\translit($mod,'uri2');
+}
+
+
+/**
  * Возвращает сумму прописью
  * @author runcore
  * @uses morph(...)
