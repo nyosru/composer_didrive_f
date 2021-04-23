@@ -15,7 +15,8 @@ define('IN_NYOS_PROJECT', true);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 // die(\f\pa($_REQUEST));
-require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
+
+require( __DIR__ . '/../base/all/ajax.start.php' );
 
 
 try {

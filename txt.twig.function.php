@@ -52,3 +52,10 @@ $twig->addFilter(new Twig_SimpleFilter('phone', function( $value, $type = '8rus'
 //
 //            return $value . ' ' . $prefix;
         }));
+
+/**
+ * вернуть только цифры из строки
+ */
+$twig->addFilter(new Twig_SimpleFilter('f__txt__onlyNumbers', function( $sring ) {
+            return preg_replace('/\s+/', '', $sring );
+        }));

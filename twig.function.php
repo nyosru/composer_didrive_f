@@ -16,11 +16,7 @@ $function = new Twig_SimpleFunction('f__md5', function ( string $str ) {
 });
 $twig->addFunction($function);
 
-$function = new Twig_SimpleFunction('f__translit', function ( $cyr_str = '', $type = false ) {
-    
-    if (empty($cyr_str))
-        return '';
-    
+$function = new Twig_SimpleFunction('f__translit', function ( string $cyr_str, $type = false ) {
     return \f\translit($cyr_str, $type);
 });
 $twig->addFunction($function);
