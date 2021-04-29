@@ -514,8 +514,11 @@ function gsm_rus($gsm3, $type = false) {
  * иначе просто транслит
  * @return string
  */
-function translit($cyr_str, $type = false) {
+function translit( $cyr_str = '' , $type = false) {
 
+    if( empty($cyr_str) )
+        return '';
+    
     if (isset($_SESSION['status1']) && $_SESSION['status1'] === true) {
         global $status;
         $status .= '<fieldset class="status" ><legend>' . __CLASS__ . ' #' . __LINE__ . ' + ' . __FUNCTION__ . '</legend>';
