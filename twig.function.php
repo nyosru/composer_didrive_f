@@ -83,4 +83,10 @@ $function = new Twig_SimpleFunction('f__http_build_query', function ( array $ar 
 $twig->addFunction($function);
 
 
+$function = new Twig_SimpleFunction('file_exists', function ( $file ) {
+    return file_exists( $_SERVER['DOCUMENT_ROOT']. $file ) ?? file_exists( $file ) ;
+});
+$twig->addFunction($function);
+
+
 require_once 'txt.twig.function.php';
