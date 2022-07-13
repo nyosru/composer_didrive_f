@@ -54,6 +54,16 @@ try {
     if (isset($_dir1) && isset($_file1) && !file_exists(DR . $img_uri) && strpos($_file1, '@2x') !== false)
         $_file1 = strtr($_file1, '@2x', '');
 
+
+    $img_file_mini = 'renew_' . ($_GET['type'] ?? 't') . ($_GET['w'] ?? 'w') . \f\translit($_GET['uri'], 'uri2') . '.jpg';
+
+    if (file_exists($dir_to_save_renew . $img_file_mini)) {
+        $mime = mime_content_type($dir_to_save_renew . $img_file_mini);
+        header('Content-type: ' . $mime);
+        readfile($dir_to_save_renew . $img_file_mini);
+        exit;
+    }
+
     // если нет картинка
     if (!isset($_dir1) || !isset($_file1) || !file_exists(DR . $img_uri))
         throw new \Exception('нет изображения [' . DR . $img_uri . ']', 3);
